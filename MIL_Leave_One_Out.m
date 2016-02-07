@@ -42,7 +42,7 @@ for i = 1:num_data
 end
 
 if (isfield(run_class(1), 'BagAccu')), run.BagAccu = mean([run_class(:).BagAccu]); end;
-if (isfield(run_class(1), 'InstAccu')), run.BagAccu = mean([run_class(:).InstAccu]); end;
+if (isfield(run_class(1), 'InstAccu')), run.InstAccu = mean([run_class(:).InstAccu]); end;
 
 if (isfield(preprocess, 'EnforceDistrib') && preprocess.EnforceDistrib == 1)
    num_pos = 0;
