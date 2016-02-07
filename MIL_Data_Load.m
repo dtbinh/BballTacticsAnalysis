@@ -68,7 +68,8 @@ num_feature = size(bags(1).instance, 2);
 
 % normalize the data set
 if (preprocess.Normalization == 1) 
-    bags = MIL_Scale(bags);
+    %bags = MIL_Scale(bags);
+    bags = MIL_Scale_Standard(bags);
 end;
 
 % randomize the data
