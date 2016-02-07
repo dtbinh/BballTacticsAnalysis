@@ -6,7 +6,8 @@ if fid == -1, error('Cannot open the file for saving'); end;
 for i = 1:length(bags)
     [num_inst, num_feature] = size(bags(i).instance);
     for j = 1:num_inst
-        str = [bags(i).name ',' cell2mat(bags(i).inst_name(j)) ',' feature_line(bags(i).instance(j,:)) num2str(bags(i).inst_label(j)) '\n'];
+        %str = [bags(i).name ',' cell2mat(bags(i).inst_name(j)) ',' feature_line(bags(i).instance(j,:)) num2str(bags(i).inst_label(j)) '\n'];
+        str = [cell2mat(bags(i).inst_name(j)) ',' bags(i).name ',' num2str(bags(i).inst_label(j)) ',' feature_line(bags(i).instance(j,:))  '\n'];
         fprintf(fid, str);
     end
 end
