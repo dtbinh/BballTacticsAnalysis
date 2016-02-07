@@ -19,9 +19,13 @@ switch p(1)
 end
         
 % set up the commands
-train_cmd = sprintf('!svm\\svmtrain -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file);
-test_cmd = sprintf('!svm\\svmpredict -b 1 %s %s %s > log1', temp_test_file, temp_model_file, temp_output_file);
-
+if ispc
+    train_cmd = sprintf('!svm\\svmtrain -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file);
+    test_cmd = sprintf('!svm\\svmpredict -b 1 %s %s %s > log1', temp_test_file, temp_model_file, temp_output_file);
+else
+    train_cmd = sprintf('svm/svm-train -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file);
+    test_cmd = sprintf('svm/svm-predict -b 1 %s %s %s > log1', temp_test_file, temp_model_file, temp_output_file);
+end
 [num_train_data, num_feature] = size(X_train);   
 [num_test_data, num_feature] = size(X_test);   
 
@@ -39,7 +43,11 @@ if (~isempty(X_train)),
     fclose(fid);
     % train the svm
     fprintf('Running: %s..................\n', train_cmd);
-    eval(train_cmd);
+    if ispc
+        eval(train_cmd);
+    else
+        system(train_cmd);
+    end
 end;
 
 % Prediction
@@ -55,7 +63,11 @@ for i = 1:num_test_data,
 end
 fclose(fid);
 fprintf('Running: %s..................\n', test_cmd);
-eval(test_cmd);
+if ispc
+    eval(test_cmd);
+else
+    system(test_cmd);
+end
 
 fid = fopen(temp_output_file, 'r');
 line = fgets(fid);
