@@ -19,10 +19,13 @@ switch p(1)
 end
         
 % set up the commands
-if ispc
+if ispc  && gpuDeviceCount
+    train_cmd = sprintf('!svm-gpu\\svm-train -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file);
+    test_cmd = sprintf('!svm-gpu\\svm-predict -b 1 %s %s %s > log1', temp_test_file, temp_model_file, temp_output_file);
+elseif ispc && ~gpuDeviceCount
     train_cmd = sprintf('!svm\\svmtrain -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file);
     test_cmd = sprintf('!svm\\svmpredict -b 1 %s %s %s > log1', temp_test_file, temp_model_file, temp_output_file);
-else
+else    
     train_cmd = sprintf('svm/svm-train -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file);
     test_cmd = sprintf('svm/svm-predict -b 1 %s %s %s > log1', temp_test_file, temp_model_file, temp_output_file);
 end
