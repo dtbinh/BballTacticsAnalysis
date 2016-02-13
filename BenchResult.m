@@ -102,8 +102,8 @@ NegativeWeightO = 1;
 
 for f=1:nbfiles
     tic
-for i = -1
-    for j=-3
+for i = -3:3
+    for j=-3:3
         for k=0
             KernelParam = 2^i*KernelParamO
             CostFactor  = 2^j*CostFactorO
