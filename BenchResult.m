@@ -109,10 +109,10 @@ for i = -3:3
             CostFactor  = 2^j*CostFactorO
             NegativeWeight=2^k*NegativeWeightO
 if iscell(datafile)
-subfolder = [pathName '/' strtok(datafile{f},'.') '/' EvaluationMethod '/SVM/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
+subfolder = ['result/' strtok(datafile{f},'.') '/' EvaluationMethod '/SVM/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
 inputfile = [pathName datafile{f}];
 else
-subfolder = [pathName '/' strtok(datafile,'.') '/' EvaluationMethod '/SVM/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
+subfolder = ['result/' strtok(datafile,'.') '/' EvaluationMethod '/SVM/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
 inputfile = [pathName datafile];
 end
 
