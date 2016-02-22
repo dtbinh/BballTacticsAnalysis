@@ -64,6 +64,8 @@ KernelParamO = 0.05;
 CostFactorO  = 1;
 NegativeWeightO = 1;
 
+homePathName = pwd;
+outputPath = strrep(pathName,[homePathName filesep 'data'],'tuning'); 
 % for f=1:nbfiles
 %     tic
 % for i = -3:3
@@ -109,10 +111,10 @@ for i = -3:3
             CostFactor  = 2^j*CostFactorO
             NegativeWeight=2^k*NegativeWeightO
 if iscell(datafile)
-subfolder = ['result/' strtok(datafile{f},'.') '/' EvaluationMethod '/SVM/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
+subfolder = [outputPath strtok(datafile{f},'.') '/' EvaluationMethod '/SVM/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
 inputfile = [pathName datafile{f}];
 else
-subfolder = ['result/' strtok(datafile,'.') '/' EvaluationMethod '/SVM/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
+subfolder = [outputPath strtok(datafile,'.') '/' EvaluationMethod '/SVM/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
 inputfile = [pathName datafile];
 end
 
