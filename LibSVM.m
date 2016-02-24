@@ -17,18 +17,38 @@ switch p(1)
     case 4
       s = sprintf('-u "%s"', p(2));
 end
-        
-% set up the commands
-if ispc  && gpuDeviceCount
-    train_cmd = sprintf('!svm-gpu\\svm-train-gpu -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file);
-    test_cmd = sprintf('!svm-gpu\\svm-predict -b 1 %s %s %s > log1', temp_test_file, temp_model_file, temp_output_file);
-elseif ispc && ~gpuDeviceCount
-    train_cmd = sprintf('!svm\\svmtrain -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file);
-    test_cmd = sprintf('!svm\\svmpredict -b 1 %s %s %s > log1', temp_test_file, temp_model_file, temp_output_file);
-else    
-    train_cmd = sprintf('svm/svm-train -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file);
-    test_cmd = sprintf('svm/svm-predict -b 1 %s %s %s > log1', temp_test_file, temp_model_file, temp_output_file);
+
+if ismac
+    % Code to run on Mac plaform
+    if gpuDeviceCount
+       train_cmd = sprintf('svm/osx/svm-train-gpu -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file);
+    else
+       train_cmd = sprintf('svm/osx/svm-train -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file); 
+    end
+    test_cmd = sprintf('svm/osx/svm-predict -b 1 %s %s %s > log1', temp_test_file, temp_model_file, temp_output_file);
+
+elseif ispc
+    % Code to run on Windows platform
+    if gpuDeviceCount
+       train_cmd = sprintf('!svm-gpu\\win64\\svm-train-gpu -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file);
+    else
+       train_cmd = sprintf('!svm\\win64\\svm-train -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file); 
+    end
+    test_cmd = sprintf('!svm\\win64\\svm-predict -b 1 %s %s %s > log1', temp_test_file, temp_model_file, temp_output_file);
+
+elseif isunix
+    % Code to run on Linux plaform
+    if gpuDeviceCount
+       train_cmd = sprintf('svm/linux64/svm-train-gpu -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file);
+    else
+       train_cmd = sprintf('svm/linux64/svm-train -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file);
+    end
+    test_cmd = sprintf('svm/linux64/svm-predict -b 1 %s %s %s > log1', temp_test_file, temp_model_file, temp_output_file);
+    
+else
+    disp('Cannot recognize platform')
 end
+
 [num_train_data, num_feature] = size(X_train);   
 [num_test_data, num_feature] = size(X_test);   
 

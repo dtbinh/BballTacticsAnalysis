@@ -1,8 +1,0 @@
-@kernel
-type polynomial
-degree 2
-@parameters
-pattern
-C 100
-epsilon 0.01
-verbosity 1 
