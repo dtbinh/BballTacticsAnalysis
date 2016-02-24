@@ -1,5 +1,0 @@
-
-Processing Filename: C:\Users\Lab519\Documents\GitHub\MILL\data\nonSyncLargeV\SPV.data
-Classifier:inst_MI_SVM -Kernel 2 -KernelParam 0.025 -CostFactor 0.25 -NegativeWeight 1
-Message: Cross Validation, Folder: 5,  Shuffled 
-Bag label accuracy = 0.962678, Instance label accuracy = 0.970085, 
