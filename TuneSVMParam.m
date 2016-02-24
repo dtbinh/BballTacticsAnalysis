@@ -108,4 +108,16 @@ disp('max combinede Accurcy')
 disp(['row ' int2str(row(1)) ', col ' int2str(col(1)) ' combined:' num2str(combineAccu(row(1),col(1)))]);
 disp(['bag:' num2str(bag(row(1),col(1),4)) ', inst:' num2str(inst(row(1),col(1),4)) ', inst_F1:' num2str(instLabel.F1(row(1),col(1),4))]);
 disp(['kernelParm=' num2str(kernel(col(1))) ', costFactor=' num2str(cost(row(1)))]);
+<<<<<<< Updated upstream
+=======
+
+optimalFiles = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect '/' EvaluationSelect '/SVM/K=' num2str(kernel(col(1))) 'C=' num2str(cost(row(1))) 'N=' num2str(NegativeWeight) '/' SVMType];
+%outputFolder = ['result/' datasetSelect featureSelect '/' tacticSelect featureSelect '/' EvaluationSelect '/SVM/K=' num2str(kernel(col(1))) 'C=' num2str(cost(row(1))) 'N=' num2str(NegativeWeight)];
+outputFolder = ['result/' datasetSelect featureSelect '/' tacticSelect featureSelect '/' SVMType '/' EvaluationSelect '/K=' num2str(kernel(col(1))) 'C=' num2str(cost(row(1))) 'N=' num2str(NegativeWeight)];
+if ~exist(outputFolder,'dir')
+    mkdir(outputFolder)
+end
+copyfile([optimalFiles '*'],outputFolder);
+
+>>>>>>> Stashed changes
 end
