@@ -30,7 +30,7 @@ if ismac
 elseif ispc
     % Code to run on Windows platform
     if gpuDeviceCount
-       train_cmd = sprintf('!svm-gpu\\win64\\svm-train-gpu -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file);
+       train_cmd = sprintf('!svm\\win64\\svm-train-gpu -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file);
     else
        train_cmd = sprintf('!svm\\win64\\svm-train -b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f %s %s > log1', p(1), s, p(3), p(4), temp_train_file, temp_model_file); 
     end
