@@ -1,5 +1,5 @@
-function BenchResult(EvaluationMethod) 
-
+function BenchResult(EvaluationMethod,kernelType) 
+global bagCounter instCounter
 %maxNumCompThreads(1);
 % % Leave one out 
 % subfolder = ['LOUFeature-dist0/' featureSelect];
@@ -104,21 +104,8 @@ outputPath = strrep(pathName,[homePathName filesep 'data'],'tuning');
 
 for f=1:nbfiles
     tic
-for i = -3:3
-    for j=-3:3
-        for k=0
-            KernelParam = 2^i*KernelParamO
-            CostFactor  = 2^j*CostFactorO
-            NegativeWeight=2^k*NegativeWeightO
-if iscell(datafile)
-subfolder = [outputPath strtok(datafile{f},'.') '/' EvaluationMethod '/SVM/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
-inputfile = [pathName datafile{f}];
-else
-subfolder = [outputPath strtok(datafile,'.') '/' EvaluationMethod '/SVM/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
-inputfile = [pathName datafile];
-end
 
-mkdir(subfolder);
+
 
 if strcmp(EvaluationMethod,'leave_one_out')
     EvalCmd = '-sf 0 -- leave_one_out';
@@ -126,20 +113,56 @@ elseif strcmp(EvaluationMethod,'cross_validate')
     EvalCmd = '-sf 1 -- cross_validate -t 5';
 end
 
-MIL_Run(['classify -t ' inputfile ' -o ' ... 
-    subfolder 'instMI.data.result -p ' subfolder 'instMI.data.pred -if 0 ¡Vn 1 -distrib 0 ' EvalCmd ' -- inst_MI_SVM -Kernel 2 -KernelParam ' ... 
-    num2str(KernelParam) ' -CostFactor ' num2str(CostFactor) ' -NegativeWeight ' num2str(NegativeWeight)]);
-%copyfile('temp/temp.output.txt',[featureSelect '/WW' featureSelect '_mi.output.txt']);
-%pause
-MIL_Run(['classify -t ' inputfile ' -o ' ...
-    subfolder 'bagMI.data.result -p ' subfolder 'bagMI.data.pred --if 0 ¡Vn 1 -distrib 0 ' EvalCmd ' -- bag_MI_SVM -Kernel 2 -KernelParam ' ...
-    num2str(KernelParam) ' -CostFactor ' num2str(CostFactor) ' -NegativeWeight ' num2str(NegativeWeight)]);
-        end
-    end
-end
+switch kernelType
+    case 'linear'
+    	if iscell(datafile)
+			subfolder = [outputPath strtok(datafile{f},'.') '/' EvaluationMethod '/' kernelType '/SVM/'];
+			inputfile = [pathName datafile{f}];
+		else
+			subfolder = [outputPath strtok(datafile,'.') '/' EvaluationMethod '/' kernelType '/SVM/'];
+			inputfile = [pathName datafile];
+		end
+
+		mkdir(subfolder);
+
+	    MIL_Run(['classify -t ' inputfile ' -o ' ... 
+	        subfolder 'instMI.data.result -p ' subfolder 'instMI.data.pred -if 0 ¡Vn 1 -distrib 0 ' EvalCmd ' -- inst_MI_SVM -Kernel 0']);
+
+	    MIL_Run(['classify -t ' inputfile ' -o ' ...
+	        subfolder 'bagMI.data.result -p ' subfolder 'bagMI.data.pred --if 0 ¡Vn 1 -distrib 0 ' EvalCmd ' -- bag_MI_SVM -Kernel 0']);
+    case 'RBF'
+		for i = -3:3
+		    for j=-3:3
+		        for k=0
+            		KernelParam = 2^i*KernelParamO
+            		CostFactor  = 2^j*CostFactorO
+            		NegativeWeight=2^k*NegativeWeightO
+					if iscell(datafile)
+						subfolder = [outputPath strtok(datafile{f},'.') '/' EvaluationMethod '/' kernelType '/SVM/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
+						inputfile = [pathName datafile{f}];
+					else
+						subfolder = [outputPath strtok(datafile,'.') '/' EvaluationMethod '/' kernelType '/SVM/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
+						inputfile = [pathName datafile];
+					end
+
+					mkdir(subfolder);    
+        			MIL_Run(['classify -t ' inputfile ' -o ' ... 
+            			subfolder 'instMI.data.result -p ' subfolder 'instMI.data.pred -if 0 ¡Vn 1 -distrib 0 ' EvalCmd ' -- inst_MI_SVM -Kernel 2 -KernelParam ' ... 
+            			num2str(KernelParam) ' -CostFactor ' num2str(CostFactor) ' -NegativeWeight ' num2str(NegativeWeight)]);
+        
+        			MIL_Run(['classify -t ' inputfile ' -o ' ...
+            			subfolder 'bagMI.data.result -p ' subfolder 'bagMI.data.pred --if 0 ¡Vn 1 -distrib 0 ' EvalCmd ' -- bag_MI_SVM -Kernel 2 -KernelParam ' ...
+            			num2str(KernelParam) ' -CostFactor ' num2str(CostFactor) ' -NegativeWeight ' num2str(NegativeWeight)]);
+         			end
+    			end
+			end
+   
+    otherwise
+        error('No Specific Kernel Type');
+	end
 toc
 end
 
-end
+%save('SVM_Iter.mat','bagCounter','instCounter');
 
-%MIL_Run('classify -t WWV.data -- leave_one_out -- DD ¡VNumRuns 1 ¡VAggregate avg');
+end

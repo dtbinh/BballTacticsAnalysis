@@ -40,6 +40,11 @@ for i = 1:num_folder
   %copyfile('temp/temp.output.txt',[strtok(preprocess.input_file,'.') '/cross_validate/' classifier '_iter' int2str(i) '_' classifier '.txt']);
   k = strfind(preprocess.output_file,'.data.result');
   testbags = bags(testindex);
+  %tranibags = bags(trainindex);
+  
+  %record model txt file
+  copyfile('temp/temp.model.txt',[preprocess.output_file(1:k-1) '_model' int2str(i) '.txt']);
+  
   filename = [preprocess.output_file(1:k-1) '_validate' int2str(i) '.txt'];
   fid = fopen(filename,'w');
   fprintf(fid,'bagName  bagPred  bagTruth  bagProb  instPred  instTruth  instProb \n');
