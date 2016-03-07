@@ -3,17 +3,21 @@ clear all
 
 tactics = {'F23','EV','HK','PD','PT','RB','SP','WS','WV','WW'};
 %features = {'P','V','A','Arc','deltaA','deltaP','Zone','All'};
-features = {'P','V','A','Arc','deltaA','deltaP','jointAreaIoU'};
-%features = {'Zone'};
+%features = {'P','V','A','Arc','deltaA','deltaP','jointAreaIoU'};
+%features = {'Zone','ZoneV'};
+features = {'P+V'}%,'V'};
 evalOption = {'leave_one_out','cross_validate'};
-dataset = {'small','large'};
+%dataset = {'small','large'};
+dataset = {'nonSyncLarge','syncLarge'};
 svm = {'instMI','bagMI'};
 %targetDir = 'dataResultForMILL';
 %targetDir = 'dataJointArea';
-targetDir = 'data';
+%targetDir = 'data';
+targetDir = 'tuning';
+group = 'single';
 
-query = [2 10];
-
+%query = [2 10];
+query = 1:10;
 
 for i=1:length(query)%:length(tactics)
     t = query(i);
@@ -23,7 +27,7 @@ for i=1:length(query)%:length(tactics)
                 fid = figure(1);
                 %figure('name',['tatic ' tactics{t} ',' dataset{d} ',' features{f}]);
                 fid.Name = ['tatic ' tactics{t} ',' dataset{d} ',' features{f}];
-                TuneSVMParam(targetDir,tactics{t},evalOption{d},dataset{d},features{f},svm{s});
+                TuneSVMParam([targetDir '/' group],tactics{t},evalOption{d},dataset{d},features{f},svm{s});
                 pause
             end
         end
