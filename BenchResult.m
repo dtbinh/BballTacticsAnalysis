@@ -1,5 +1,5 @@
 function BenchResult(EvaluationMethod,kernelType) 
-global bagCounter instCounter
+%global bagCounter instCounter
 %maxNumCompThreads(1);
 % % Leave one out 
 % subfolder = ['LOUFeature-dist0/' featureSelect];
