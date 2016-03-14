@@ -1,4 +1,4 @@
-function TuneSVMParam(targetDir,playerNum,tacticSelect,EvaluationSelect,datasetSelect,featureSelect,SVMType,linearClassifier)
+function TuneSVMParam(targetDir,playerNum,tacticSelect,EvaluationSelect,datasetSelect,featureSelect,SVMType,SVMKernelType)
 
 KernelParamO = 0.05;
 CostFactorO  = 1;
@@ -9,17 +9,17 @@ for i = -3:3
             KernelParam = 2^i*KernelParamO;
             CostFactor  = 2^j*CostFactorO;
             NegativeWeight=2^k*NegativeWeightO;
-            if ~linearClassifier
+%             if ~linearClassifier
             if ~isempty(playerNum)
-                subfolder = [targetDir '/' datasetSelect featureSelect '/' playerNum '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight)];
+                subfolder = [targetDir '/' datasetSelect featureSelect '/' playerNum '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/' SVMKernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight)];
             else
-                subfolder = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight)];
+                subfolder = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/' SVMKernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight)];
             end
-            elseif ~isempty(playerNum)
-                subfolder = [targetDir datasetSelect featureSelect '/' playerNum '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/linear/SVM'];
-            else
-                subfolder = [targetDir datasetSelect featureSelect '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/linear/SVM'];
-            end
+%             elseif ~isempty(playerNum)
+%                 subfolder = [targetDir datasetSelect featureSelect '/' playerNum '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/linear/SVM'];
+%             else
+%                 subfolder = [targetDir datasetSelect featureSelect '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/linear/SVM'];
+%             end
             fid  = fopen([subfolder '/' SVMType '.data.result'],'r');
             % to lowercase
             if fid == -1
@@ -118,25 +118,25 @@ disp('max combinede Accurcy')
 disp(['row ' int2str(row(1)) ', col ' int2str(col(1)) ' combined:' num2str(combineAccu(row(1),col(1)))]);
 disp(['bag:' num2str(bag(row(1),col(1),4)) ', inst:' num2str(inst(row(1),col(1),4)) ', inst_F1:' num2str(instLabel.F1(row(1),col(1),4))]);
 disp(['kernelParm=' num2str(kernel(col(1))) ', costFactor=' num2str(cost(row(1)))]);
-if ~linearClassifier
+% if ~linearClassifier
 if ~isempty(playerNum)
-optimalFiles = [targetDir '/' datasetSelect featureSelect '/' playerNum '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/K=' num2str(kernel(col(1))) 'C=' num2str(cost(row(1))) 'N=' num2str(NegativeWeight) '/' SVMType];
+optimalFiles = [targetDir '/' datasetSelect featureSelect '/' playerNum '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/' SVMKernelType '/K=' num2str(kernel(col(1))) 'C=' num2str(cost(row(1))) 'N=' num2str(NegativeWeight) '/' SVMType];
 %outputFolder = ['result/' datasetSelect featureSelect '/' tacticSelect featureSelect '/' EvaluationSelect '/SVM/K=' num2str(kernel(col(1))) 'C=' num2str(cost(row(1))) 'N=' num2str(NegativeWeight)];
-outputFolder = ['result/' datasetSelect featureSelect '/' playerNum '/' tacticSelect featureSelect playerNum '/' SVMType '/' EvaluationSelect '/K=' num2str(kernel(col(1))) 'C=' num2str(cost(row(1))) 'N=' num2str(NegativeWeight)];
+outputFolder = ['result/' datasetSelect featureSelect '/' playerNum '/' tacticSelect featureSelect playerNum '/' SVMType '/' EvaluationSelect '/SVM/' SVMKernelType '/K=' num2str(kernel(col(1))) 'C=' num2str(cost(row(1))) 'N=' num2str(NegativeWeight)];
 else
-optimalFiles = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/K=' num2str(kernel(col(1))) 'C=' num2str(cost(row(1))) 'N=' num2str(NegativeWeight) '/' SVMType];
+optimalFiles = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/' SVMKernelType '/K=' num2str(kernel(col(1))) 'C=' num2str(cost(row(1))) 'N=' num2str(NegativeWeight) '/' SVMType];
 %outputFolder = ['result/' datasetSelect featureSelect '/' tacticSelect featureSelect '/' EvaluationSelect '/SVM/K=' num2str(kernel(col(1))) 'C=' num2str(cost(row(1))) 'N=' num2str(NegativeWeight)];
-outputFolder = ['result/' datasetSelect featureSelect '/'  tacticSelect featureSelect playerNum '/' SVMType '/' EvaluationSelect '/K=' num2str(kernel(col(1))) 'C=' num2str(cost(row(1))) 'N=' num2str(NegativeWeight)];
+outputFolder = ['result/' datasetSelect featureSelect '/'  tacticSelect featureSelect playerNum '/' SVMType '/' EvaluationSelect '/SVM/' SVMKernelType '/K=' num2str(kernel(col(1))) 'C=' num2str(cost(row(1))) 'N=' num2str(NegativeWeight)];
 end
-elseif ~isempty(playerNum)
-  optimalFiles = [targetDir '/' datasetSelect featureSelect '/' playerNum '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/linear/SVM/' SVMType];
-  %outputFolder = ['result/' datasetSelect featureSelect '/' tacticSelect featureSelect '/' EvaluationSelect '/SVM/K=' num2str(kernel(col(1))) 'C=' num2str(cost(row(1))) 'N=' num2str(NegativeWeight)];
-  outputFolder = ['result/' datasetSelect featureSelect '/' playerNum '/'  tacticSelect featureSelect playerNum '/' SVMType '/' EvaluationSelect '/linear/'];      
-else
-  optimalFiles = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/linear/SVM/' SVMType];
-  %outputFolder = ['result/' datasetSelect featureSelect '/' tacticSelect featureSelect '/' EvaluationSelect '/SVM/K=' num2str(kernel(col(1))) 'C=' num2str(cost(row(1))) 'N=' num2str(NegativeWeight)];
-  outputFolder = ['result/' datasetSelect featureSelect '/'  tacticSelect featureSelect playerNum '/' SVMType '/' EvaluationSelect '/linear/'];  
-end
+% elseif ~isempty(playerNum)
+%   optimalFiles = [targetDir '/' datasetSelect featureSelect '/' playerNum '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/linear/SVM/' SVMType];
+%   %outputFolder = ['result/' datasetSelect featureSelect '/' tacticSelect featureSelect '/' EvaluationSelect '/SVM/K=' num2str(kernel(col(1))) 'C=' num2str(cost(row(1))) 'N=' num2str(NegativeWeight)];
+%   outputFolder = ['result/' datasetSelect featureSelect '/' playerNum '/'  tacticSelect featureSelect playerNum '/' SVMType '/' EvaluationSelect '/linear/'];      
+% else
+%   optimalFiles = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/linear/SVM/' SVMType];
+%   %outputFolder = ['result/' datasetSelect featureSelect '/' tacticSelect featureSelect '/' EvaluationSelect '/SVM/K=' num2str(kernel(col(1))) 'C=' num2str(cost(row(1))) 'N=' num2str(NegativeWeight)];
+%   outputFolder = ['result/' datasetSelect featureSelect '/'  tacticSelect featureSelect playerNum '/' SVMType '/' EvaluationSelect '/linear/'];  
+% end
 if ~exist(outputFolder,'dir')
     mkdir(outputFolder)
 end

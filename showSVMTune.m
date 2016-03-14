@@ -11,21 +11,22 @@ features = {'ZoneDist'};
 evalOption = {'leave_one_out','cross_validate'};
 %dataset = {'small','large'};
 dataset = {'nonSyncLarge','syncLarge'};
-svm = {'instMI','bagMI'};
+svm = {'inst_MI','bag_MI'};
 %targetDir = 'dataResultForMILL';
 %targetDir = 'dataJointArea';
 %targetDir = 'data';
 %targetDir = 'tuning/single(linear)';
 targetDir = 'tuning';
- group = 'multiPlayers(RBF)';
+ group = 'multiPlayers';
 %group = 'multiPlayers/';
-playerNum = '5';
+SVMKernelType = 'RBF'; % RBF,linear
+playerNum = '3';
 % group = '';
 % playerNum = '';
-linearClassifier = 0;
+%linearClassifier = 0;
 
 %query = [2 10];
-query = [9];
+query = [2];%7 10];
 
 for i=1:length(query)%:length(tactics)
     t = query(i);
@@ -35,7 +36,7 @@ for i=1:length(query)%:length(tactics)
                 fid = figure(1);
                 %figure('name',['tatic ' tactics{t} ',' dataset{d} ',' features{f}]);
                 fid.Name = ['tatic ' tactics{t} ',' dataset{d} ',' features{f}];
-                TuneSVMParam([targetDir '/' group],playerNum,tactics{t},evalOption{d},dataset{d},features{f},svm{s},linearClassifier);
+                TuneSVMParam([targetDir '/' group],playerNum,tactics{t},evalOption{d},dataset{d},features{f},svm{s},SVMKernelType);
                 pause
             end
         end
