@@ -43,7 +43,7 @@ for i = 1:num_folder
   %tranibags = bags(trainindex);
   
   %record model txt file
-  copyfile('temp/temp.model.txt',[preprocess.output_file(1:k-1) '_model' int2str(i) '.txt']);
+  copyfile([preprocess.WorkingDir '/temp/temp.model.txt'],[preprocess.output_file(1:k-1) '_model' int2str(i) '.txt']);
   
   filename = [preprocess.output_file(1:k-1) '_validate' int2str(i) '.txt'];
   fid = fopen(filename,'w');
