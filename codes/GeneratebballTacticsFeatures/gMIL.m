@@ -208,3 +208,4 @@ end
 
 
 rmpath(genpath('utility'));
+rmpath(genpath(workingDir));
