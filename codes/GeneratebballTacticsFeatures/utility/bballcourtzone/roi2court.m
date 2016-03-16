@@ -19,10 +19,10 @@ mask = cat(3,z,z,BW); img(mask) = a*ROI(i).FaceColor(3) + (1-a)*img(mask);
 
 ROI(i).BW = BW;
 end
-% show result
-figure,imshow(uint8(img))
-F = getframe(gca);
-imwrite(F.cdata,'courtZone.png','png');
-%figure,imshow(y/2);
+% % show result
+% figure,imshow(uint8(img))
+% F = getframe(gca);
+% imwrite(F.cdata,'courtZone.png','png');
+% %figure,imshow(y/2);
 
 end

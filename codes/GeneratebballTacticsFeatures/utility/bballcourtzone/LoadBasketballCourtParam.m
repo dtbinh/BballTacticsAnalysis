@@ -56,5 +56,5 @@ basketballZone(11).name = 'leftThree';
 basketballZone(11).CornerPosition = [0,230;134,230;230,327;230,348;0,348];
 basketballZone(11).FaceColor = [0 128 0];
 
-
+% plot basketball court region
 basketballZone = roi2court(halfCourt,basketballZone);
