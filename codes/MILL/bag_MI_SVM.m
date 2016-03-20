@@ -49,7 +49,7 @@ else
     while 1
         counter = counter + 1
         new_para = sprintf(' -NegativeWeight %.10g', 1/avg_num_inst);
-        [all_label_predict, all_prob_predict] = LibSVM([para new_para], sample_instance, sample_label, [train_instance; test_instance], ones(num_train_inst+num_test_inst, 1));
+        [all_label_predict, all_prob_predict] = LibSVMMEX([para new_para], sample_instance, sample_label, [train_instance; test_instance], ones(num_train_inst+num_test_inst, 1));
         train_label_predict = all_label_predict(1 : num_train_inst);
         train_prob_predict = all_prob_predict(1 : num_train_inst);
         test_label_predict = all_label_predict(num_train_inst+1 : num_train_inst+ num_test_inst);
