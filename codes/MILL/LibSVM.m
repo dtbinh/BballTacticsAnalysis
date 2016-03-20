@@ -1,4 +1,4 @@
-function  [Y_compute, Y_prob] = libSVM(para, X_train, Y_train, X_test, Y_test)
+function  [Y_compute, Y_prob] = LibSVM(para, X_train, Y_train, X_test, Y_test)
    
 global temp_train_file temp_test_file temp_output_file temp_model_file libSVM_dir; 
 
