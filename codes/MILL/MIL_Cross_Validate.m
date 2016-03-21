@@ -3,7 +3,7 @@
 
 function run = MIL_Cross_Validate(data_file, classifier_wrapper_handle, classifier)
 
-global preprocess;
+global preprocess model;
 %[X, Y, num_data, num_feature] = preprocessing(D);
 %clear D;
 [bags, num_data, num_feature] = MIL_Data_Load(data_file);
@@ -43,7 +43,8 @@ for i = 1:num_folder
   %tranibags = bags(trainindex);
   
   %record model txt file
-  copyfile([preprocess.WorkingDir '/temp/temp.model.txt'],[preprocess.output_file(1:k-1) '_model' int2str(i) '.txt']);
+  %copyfile([preprocess.WorkingDir '/temp/temp.model.txt'],[preprocess.output_file(1:k-1) '_model' int2str(i) '.txt']);
+  save([preprocess.output_file(1:k-1) '_model' int2str(i) '.mat'],'model','-mat');
   
   filename = [preprocess.output_file(1:k-1) '_validate' int2str(i) '.txt'];
   fid = fopen(filename,'w');

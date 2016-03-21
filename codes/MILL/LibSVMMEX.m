@@ -1,6 +1,6 @@
 function  [Y_compute, Y_prob] = LibSVMMEX(para, X_train, Y_train, X_test, Y_test)
    
-%global model accuracy
+global model
 
 num_class = 2;
 p = str2num(char(ParseParameter(para, {'-Kernel';'-KernelParam'; '-CostFactor'; '-NegativeWeight'; '-Threshold'}, {'2';'0.05';'1';'1';'0'})));
