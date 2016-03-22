@@ -1,8 +1,7 @@
-data/
+data*/
 temp/
 log1
 Collected Tactics/
 Output/
-tuning/
+tuning*/
 result/
-tuning/
