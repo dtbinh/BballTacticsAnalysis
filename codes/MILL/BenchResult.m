@@ -43,7 +43,7 @@ end
 switch kernelType
     case 'linear'
     	if iscell(datafile)
-			subfolder = [outputPath strtok(datafile{f},'.') '/' EvaluationMethod '/SVM/' kernelType '/' ];
+			subfolder = [outputPath strtok(datafile{f},'.') '/' EvaluationMethod '/SVM/' SVMType '/' kernelType '/' ];
 			inputfile = [pathName datafile{f}];
 		else
 			subfolder = [outputPath strtok(datafile,'.') '/' EvaluationMethod '/SVM/' kernelType  '/'];
@@ -67,10 +67,10 @@ switch kernelType
             		CostFactor  = 2^j*CostFactorO
             		NegativeWeight=2^k*NegativeWeightO
 					if iscell(datafile)
-						subfolder = [outputPath strtok(datafile{f},'.') '/' EvaluationMethod  '/SVM/' kernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
+						subfolder = [outputPath strtok(datafile{f},'.') '/' EvaluationMethod  '/SVM/' SVMType '/' kernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
 						inputfile = [pathName datafile{f}];
 					else
-						subfolder = [outputPath strtok(datafile,'.') '/' EvaluationMethod '/SVM/' kernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
+						subfolder = [outputPath strtok(datafile,'.') '/' EvaluationMethod '/SVM/' SVMType '/' kernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
 						inputfile = [pathName datafile];
 					end
 
@@ -85,9 +85,9 @@ switch kernelType
         			MIL_Run(['classify -t ' inputfile ' -o ' ...
             			subfolder SVMType '.data.result -p ' subfolder SVMType '.data.pred --if 0 ¡Vn ' normalization ' -distrib 0 ' EvalCmd ' -- ' SVMType '_SVM -Kernel 2 -KernelParam ' ...
             			num2str(KernelParam) ' -CostFactor ' num2str(CostFactor) ' -NegativeWeight ' num2str(NegativeWeight)]);
-         			end
-    			end
-			end
+                end
+            end
+        end
    
     otherwise
         error('No Specific Kernel Type');
