@@ -62,7 +62,7 @@ switch kernelType
     case 'RBF'
 		for i = -3:3
 		    for j=-3:3
-		        for k=0
+		        for k=0:3
             		KernelParam = 2^i*KernelParamO
             		CostFactor  = 2^j*CostFactorO
             		NegativeWeight=2^k*NegativeWeightO
