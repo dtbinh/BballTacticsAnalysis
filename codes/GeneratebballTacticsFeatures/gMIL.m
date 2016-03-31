@@ -29,6 +29,18 @@ tacCentroid = [1 25 43 49 60 77 93 101 116 134];
 
 tactics.refVideoIndex = tacCentroid;
 
+Traj = gtSAlign(tacCentroid,:);
+
+[gtCentroidAssign,gtCentroidCost] = FindGTCentroidAlign(tactics,Traj,'P+V');
+
+
+fileIO.sourceDir = ['Collected Tactics' filesep 'Total' filesep];
+fileIO.outputDir = ['Output' filesep];
+if ~exist(fileIO.outputDir,'dir')
+    mkdir(fileIO.outputDir);
+end
+%ShowGTCentroidTrajAlign(fileIO,court,Traj,gtCentroidAssign,gtCentroidCost,tactics)
+
 %[gtavgDTWPerTactics,gtstdDTWPerTactics,gtTotalPlayerDTW] = CalculateAvgDTW(gtSAlign,tactics);
 
 %ShowDTWonTactics(fileIO,court,gtavgDTWPerTactics,gtstdDTWPerTactics,gtTotalPlayerDTW,tactics,gtSAlign);
@@ -107,28 +119,37 @@ Zone = 0;
 
 playerNum = 1;
 % single player raw sync feature (P,V,P+V)
-GenerateMILFeature(playerNum,featureName,MILLFeatureData,tactics,SYNC)
+GenerateMILFeature(playerNum,featureName,MILLFeatureData,tactics,gtCentroidAssign,SYNC)
 % single player raw nonsync feature (P,V)
-GenerateMILFeature(playerNum,featureName(1:2),NonSyncMILLFeatureData,tactics,~SYNC)
+GenerateMILFeature(playerNum,featureName(1:2),NonSyncMILLFeatureData,tactics,gtCentroidAssign,~SYNC)
 
 zoneFeature = {'ZoneDist'};
 
-gtSZone = transformPositionToCourtIndex(gtSAlignSync,bballZone,court);
+if ~exist('gtSZone.mat','file')
+    gtSZone = transformPositionToCourtIndex(gtSAlignSync,bballZone,court);
+    save('gtSZone.mat','gtSZone');
+else
+    load('gtSZone.mat');
+end
 gtStageZoneProb = DownSamplingFeature(gtSZone,stageNum);
 
 gtStageZoneProbM{1} = gtStageZoneProb;
 mKeyPlayer{1} = tactics.keyPlayer;
-
-[gtStageZoneProbM{2},mKeyPlayer{2}] = MultiplePlayerFeature(gtStageZoneProb,tactics.keyPlayer,2);
-
-[gtStageZoneProbM{3},mKeyPlayer{3}] = MultiplePlayerFeature(gtStageZoneProb,tactics.keyPlayer,3);
-
-[gtStageZoneProbM{4},mKeyPlayer{4}] = MultiplePlayerFeature(gtStageZoneProb,tactics.keyPlayer,4);
-
-[gtStageZoneProbM{5},mKeyPlayer{5}] = MultiplePlayerFeature(gtStageZoneProb,tactics.keyPlayer,5);
-
+% ================================================================================================
+% [gtStageZoneProbM{2},mKeyPlayer{2}] = MultiplePlayerFeature(gtStageZoneProb,tactics.keyPlayer,2);
+% 
+% [gtStageZoneProbM{3},mKeyPlayer{3}] = MultiplePlayerFeature(gtStageZoneProb,tactics.keyPlayer,3);
+% 
+% [gtStageZoneProbM{4},mKeyPlayer{4}] = MultiplePlayerFeature(gtStageZoneProb,tactics.keyPlayer,4);
+% 
+% [gtStageZoneProbM{5},mKeyPlayer{5}] = MultiplePlayerFeature(gtStageZoneProb,tactics.keyPlayer,5);
+% 
+% for playerNum = 1:5
+%     GenerateMILFeature(playerNum,zoneFeature,gtStageZoneProbM(playerNum),tactics,gtCentroidAssign,SYNC,mKeyPlayer{playerNum});
+% end
+% =================================================================================================
 for playerNum = 1:5
-    GenerateMILFeature(playerNum,zoneFeature,gtStageZoneProbM(playerNum),tactics,SYNC,mKeyPlayer{playerNum});
+    GenerateMILFeature(playerNum,zoneFeature,gtStageZoneProbM,tactics,gtCentroidAssign,SYNC,mKeyPlayer{1});
 end
 
 % if outputFeature

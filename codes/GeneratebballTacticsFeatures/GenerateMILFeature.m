@@ -1,4 +1,4 @@
-function GenerateMILFeature(playerNum,featureName,featureData,tactics,syncFlag,mKeyPlayerIndex)
+function GenerateMILFeature(playerNum,featureName,featureData,tactics,assign,syncFlag,mKeyPlayerIndex)
 
 if playerNum ~= 1
     playerFolder = 'multiPlayers';
@@ -17,12 +17,12 @@ largeDataPathPrefix = [pwd '/data/' playerFolder '/' syncPrefix 'Large'];
 if ~exist('mKeyPlayerIndex','var')
     for f = 1:length(featureName)
         largeDataPath = [largeDataPathPrefix featureName{f}];
-        saveMILLFeatureData(tactics,featureData{f},largeDataPath,featureName{f});
+        saveMILLFeatureData(tactics,assign,featureData{f},largeDataPath,featureName{f});
     end
 else
     for f = 1:length(featureName)
         largeDataPath = [largeDataPathPrefix featureName{f}];
-        saveMILLFeatureData(tactics,featureData{f},largeDataPath,[featureName{f} int2str(playerNum)],mKeyPlayerIndex);
+        saveMILLFeatureData(tactics,assign,featureData{f},largeDataPath,[featureName{f} int2str(playerNum)],mKeyPlayerIndex);
     end
 end
 
