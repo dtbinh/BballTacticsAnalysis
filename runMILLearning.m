@@ -7,4 +7,8 @@ BenchResult('cross_validate','RBF','inst_MI');
 
 BenchResult('cross_validate','RBF','bag_MI');
 
+BenchResult('cross_validate','linear','inst_MI');
+
+BenchResult('cross_validate','linear','bag_MI');
+
 rmpath(genpath([pwd '/codes/MILL']));
