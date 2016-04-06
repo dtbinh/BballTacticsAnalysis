@@ -6,27 +6,29 @@ tactics = {'F23','EV','HK','PD','PT','RB','SP','WS','WV','WW'};
 %features = {'P','V','A','Arc','deltaA','deltaP','jointAreaIoU'};
 %features = {'Zone','ZoneV'};
 %features = {'P+V'}%,'V'};
-features = {'ZoneDist'};
+%features = {'ZoneDist'};
+features = {'P','V'};
 %features = {'Zone'}
 evalOption = {'leave_one_out','cross_validate'};
 %dataset = {'small','large'};
 dataset = {'nonSyncLarge','syncLarge'};
 svm = {'inst_MI','bag_MI'};
-%targetDir = 'dataResultForMILL';
-%targetDir = 'dataJointArea';
-%targetDir = 'data';
-%targetDir = 'tuning/single(linear)';
-targetDir = 'tuning';
- group = 'multiPlayers';
-%group = 'multiPlayers/';
 SVMKernelType = 'RBF'; % RBF,linear
-playerNum = '3';
-% group = '';
-% playerNum = '';
-%linearClassifier = 0;
 
-%query = [2 10];
-query = [2];%7 10];
+targetDir = 'tuning';
+
+% multiple players setting
+%group = 'multiPlayers/';
+%playerNum = '3';
+
+% single player setting
+group = 'singlePlayer';
+playerNum = '';
+
+
+
+
+query = [1:10];
 
 for i=1:length(query)%:length(tactics)
     t = query(i);
