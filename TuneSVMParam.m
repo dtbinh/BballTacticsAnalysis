@@ -129,6 +129,10 @@ for n=1:4
     tempNegativeWeight(n) = NegativeWeight;
 end
 
+disp(' ');
+disp(' ');
+disp(['tempF1:' num2str(tempF1)]);
+
 optimalWeightIdx = find(tempF1 == max(tempF1));
 optimalKernel = tempKernel(optimalWeightIdx)
 optimalCost   = tempCost(optimalWeightIdx)
