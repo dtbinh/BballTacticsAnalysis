@@ -134,11 +134,14 @@ disp(' ');
 disp(['tempF1:' num2str(tempF1)]);
 
 optimalWeightIdx = find(tempF1 == max(tempF1));
-optimalKernel = tempKernel(optimalWeightIdx)
-optimalCost   = tempCost(optimalWeightIdx)
-optimalNegativeWeight = tempNegativeWeight(optimalWeightIdx)
-optimalF1 = tempF1(optimalWeightIdx)
+optimalKernel = tempKernel(optimalWeightIdx);
+optimalCost   = tempCost(optimalWeightIdx);
+optimalNegativeWeight = tempNegativeWeight(optimalWeightIdx);
+optimalF1 = tempF1(optimalWeightIdx);
 
+disp(' ');
+disp(['optKernelParm=' num2str(optimalKernel) ', optCostFactor=' num2str(optimalCost) ', optNegativeWeight=' num2str(optimalNegativeWeight) ': F1=' num2str(optimalF1)]);
+disp(['KernelParmN1=' num2str(tempKernel(1)) ', CostFactorN1=' num2str(tempCost(1)) ', NegativeWeightN1=' num2str(tempNegativeWeight(1)) ': F1N1=' num2str(tempF1(1))]);
 
 if ~isempty(playerNum)
     optimalFiles = [targetDir '/' datasetSelect featureSelect '/' playerNum '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(optimalKernel) 'C=' num2str(optimalCost) 'N=' num2str(optimalNegativeWeight) '/' SVMType];
