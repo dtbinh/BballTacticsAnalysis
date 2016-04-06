@@ -1,4 +1,4 @@
-function BenchResult(EvaluationMethod,kernelType,SVMType) 
+function BenchResult(param,EvaluationMethod,kernelType,SVMType) 
 
 % eg: EvaluationMethod = 'cross_validate')
 %     kernelType = 'linear','RBF'
@@ -60,9 +60,9 @@ switch kernelType
  	    MIL_Run(['classify -t ' inputfile ' -o ' ... 
 	        subfolder SVMType '.data.result -p ' subfolder SVMType '.data.pred -if 0 ¡Vn ' normalization ' -distrib 0 ' EvalCmd ' -- ' SVMType '_SVM -Kernel 0']);
     case 'RBF'
-		for i = -3:3
-		    for j=-3:3
-		        for k=0:3
+		for i = param.kernel
+		    for j= param.cost
+		        for k= param.negativeWeight
             		KernelParam = 2^i*KernelParamO
             		CostFactor  = 2^j*CostFactorO
             		NegativeWeight=2^k*NegativeWeightO
