@@ -8,7 +8,7 @@ insts = [];
 
 if preprocess.InputFormat == 1
     %sparse input format
-    if ispc
+    if ispc && ~strfind(system_dependent('getos'),'Microsoft Windows 10')
         strcmd = sprintf('!ReadInput.pl %s 1', filename);
     else
         strcmd = sprintf('perl ReadInput.pl %s 1', filename);
@@ -17,7 +17,7 @@ if preprocess.InputFormat == 1
     D = load(matrix_file);
     insts = spconvert(D);
 else
-    if ispc
+    if ispc && ~strfind(system_dependent('getos'),'Microsoft Windows 10')
         strcmd = sprintf('!ReadInput.pl %s', filename);
     else
         strcmd = sprintf('perl ReadInput.pl %s', filename);
