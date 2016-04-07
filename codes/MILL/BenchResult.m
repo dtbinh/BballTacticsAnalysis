@@ -46,7 +46,7 @@ switch kernelType
 			subfolder = [outputPath strtok(datafile{f},'.') '/' EvaluationMethod '/SVM/' SVMType '/' kernelType '/' ];
 			inputfile = [pathName datafile{f}];
 		else
-			subfolder = [outputPath strtok(datafile,'.') '/' EvaluationMethod '/SVM/' kernelType  '/'];
+			subfolder = [outputPath strtok(datafile,'.') '/' EvaluationMethod '/SVM/' SVMType '/' kernelType  '/'];
 			inputfile = [pathName datafile];
 		end
 
