@@ -1,19 +1,21 @@
 function TuneSVMParam(targetDir,playerNum,tacticSelect,EvaluationSelect,datasetSelect,featureSelect,SVMType,SVMKernelType)
 
+weightNum = 1;
+
 KernelParamO = 0.05;
 CostFactorO  = 1;
 NegativeWeightO = 1;
 for i = -3:3
     for j=-3:3
-        for k=0:3
+        for k=0:weightNum-1
             KernelParam = 2^i*KernelParamO;
             CostFactor  = 2^j*CostFactorO;
             NegativeWeight=2^k*NegativeWeightO;
             
             if ~isempty(playerNum)
-                subfolder = [targetDir '/' datasetSelect featureSelect '/' playerNum '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight)];
-            else
                 subfolder = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight)];
+            else
+                subfolder = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight)];
             end
 
             fid  = fopen([subfolder '/' SVMType '.data.result'],'r');
@@ -68,9 +70,9 @@ end
 % Y = X';
 % contour(X,Y,reshape(bag(:,:,4),7,7));
 % set(gca,'XScale','log','YScale','log');
-for n=1:4
+for n=1:weightNum
     NegativeWeight=2^(n-1)*NegativeWeightO;
-    subplot(4,3,3*(n-1)+1),contour(reshape(bag(:,:,n),7,7));
+    subplot(weightNum,3,3*(n-1)+1),contour(reshape(bag(:,:,n),7,7));
     set(gca,'XTickLabel',[0.05/8 0.05/4 0.05/2 0.05 0.1 0.2 0.4],'YTickLabel',[1/8 1/4 1/2 1 2 4 8]);
     xlabel('KernelParam');
     ylabel('Cost Factor');
@@ -81,7 +83,7 @@ for n=1:4
     disp('bag');
     bag(:,:,n)
 
-    subplot(4,3,3*(n-1)+2),contour(reshape(inst(:,:,n),7,7));
+    subplot(weightNum,3,3*(n-1)+2),contour(reshape(inst(:,:,n),7,7));
     kernel = [0.05/8 0.05/4 0.05/2 0.05 0.1 0.2 0.4];
     cost   = [1/8 1/4 1/2 1 2 4 8];
     set(gca,'XTickLabel',kernel,'YTickLabel',cost);
@@ -101,7 +103,7 @@ for n=1:4
     % instLabel.Accu(:,:,4)
     % instLabel.Prec(:,:,4)
     % instLabel.Reca(:,:,4)
-    subplot(4,3,3*(n-1)+3),contour(reshape(instLabel.F1(:,:,n),7,7));
+    subplot(weightNum,3,3*(n-1)+3),contour(reshape(instLabel.F1(:,:,n),7,7));
     kernel = [0.05/8 0.05/4 0.05/2 0.05 0.1 0.2 0.4];
     cost   = [1/8 1/4 1/2 1 2 4 8];
     set(gca,'XTickLabel',kernel,'YTickLabel',cost);
@@ -134,20 +136,20 @@ disp(' ');
 disp(['tempF1:' num2str(tempF1)]);
 
 optimalWeightIdx = find(tempF1 == max(tempF1));
-optimalKernel = tempKernel(optimalWeightIdx);
-optimalCost   = tempCost(optimalWeightIdx);
-optimalNegativeWeight = tempNegativeWeight(optimalWeightIdx);
-optimalF1 = tempF1(optimalWeightIdx);
+optimalKernel = tempKernel(optimalWeightIdx(1));
+optimalCost   = tempCost(optimalWeightIdx(1));
+optimalNegativeWeight = tempNegativeWeight(optimalWeightIdx(1));
+optimalF1 = tempF1(optimalWeightIdx(1));
 
 disp(' ');
 disp(['optKernelParm=' num2str(optimalKernel) ', optCostFactor=' num2str(optimalCost) ', optNegativeWeight=' num2str(optimalNegativeWeight) ': F1=' num2str(optimalF1)]);
 disp(['KernelParmN1=' num2str(tempKernel(1)) ', CostFactorN1=' num2str(tempCost(1)) ', NegativeWeightN1=' num2str(tempNegativeWeight(1)) ': F1N1=' num2str(tempF1(1))]);
 
 if ~isempty(playerNum)
-    optimalFiles = [targetDir '/' datasetSelect featureSelect '/' playerNum '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(optimalKernel) 'C=' num2str(optimalCost) 'N=' num2str(optimalNegativeWeight) '/' SVMType];
+    optimalFiles = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(optimalKernel) 'C=' num2str(optimalCost) 'N=' num2str(optimalNegativeWeight) '/' SVMType];
     outputFolder = strrep(optimalFiles,'tuning','result');
 else
-    optimalFiles = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(optimalKernel) 'C=' num2str(optimalCost) 'N=' num2str(optimalNegativeWeight) '/' SVMType];
+    optimalFiles = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(optimalKernel) 'C=' num2str(optimalCost) 'N=' num2str(optimalNegativeWeight) '/' SVMType];
     outputFolder = strrep(optimalFiles,'tuning','result');
 end
 
