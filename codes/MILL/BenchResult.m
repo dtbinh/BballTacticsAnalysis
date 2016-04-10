@@ -18,7 +18,8 @@ end
 
 display(datafile);
 
-KernelParamO = 0.05;
+%KernelParamO = 0.05;
+KernelParamO = param.kernel0;
 CostFactorO  = 1;
 NegativeWeightO = 1;
 
@@ -63,9 +64,9 @@ switch kernelType
 		for i = param.kernel
 		    for j= param.cost
 		        for k= param.negativeWeight
-            		KernelParam = 2^i*KernelParamO
-            		CostFactor  = 2^j*CostFactorO
-            		NegativeWeight=2^k*NegativeWeightO
+            		KernelParam = 2^i*KernelParamO;
+            		CostFactor  = 2^j*CostFactorO;
+            		NegativeWeight=2^k*NegativeWeightO;
 					if iscell(datafile)
 						subfolder = [outputPath strtok(datafile{f},'.') '/' EvaluationMethod  '/SVM/' SVMType '/' kernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
 						inputfile = [pathName datafile{f}];
@@ -89,9 +90,9 @@ switch kernelType
             end
         end
    
-    otherwise
-        error('No Specific Kernel Type');
-	end
+otherwise
+    error('No Specific Kernel Type');
+end
 toc
 end
 
