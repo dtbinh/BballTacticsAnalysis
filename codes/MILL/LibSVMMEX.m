@@ -18,12 +18,13 @@ switch p(1)
       s = sprintf('-u "%s"', p(2));
 end
 
-libsvm_options = sprintf(['-b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f'], p(1), s, p(3), p(4));
+
+libsvm_options = sprintf(['-b 1 -s 0 -t %d %s -c %f -w1 1 -w0 %f -q'], p(1), s, p(3), p(4));
 
 
 model = svmtrain(double(Y_train'), X_train, libsvm_options);
 
-[Y_compute, accuracy, Y_prob] = svmpredict(Y_test, X_test, model, '-b 1');
+[Y_compute, accuracy, Y_prob] = svmpredict(Y_test, X_test, model, '-b 1 -q');
 
 % check which Y_prob is fo Y_compute
 threshold = 0.5;
