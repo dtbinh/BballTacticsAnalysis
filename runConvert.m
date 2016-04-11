@@ -4,13 +4,13 @@ clear all
 % fileLists = dir([filenamePrefix 'inst_MI_validate*']);
 
 targetDir = 'tuning/multiPlayers';
-tacticSelect = 'WV';
+tacticSelect = 'EV';
 datasetSelect = 'syncLarge';
 SVMType = 'inst_MI'; %inst_MI
 EvaluationSelect = 'cross_validate';
 featureSelect = 'ZoneDist';
 SVMKernelType = 'RBF';
-playerNum = '5';
+playerNum = '3';
 
 KernelParamO = 0.05;
 CostFactorO  = 1;
@@ -32,12 +32,14 @@ for i = -3:3
 
             for f = 1:length(fileLists)
                 %ConventMultiPlayerInst2SinglePlayer([filenamePrefix fileLists(f).name],5,3);
-                [bagAccu(f),instAccu(f)] = ConventMultiPlayerInst2SinglePlayer([subfolder '/' fileLists(f).name],5,str2double(playerNum));
+                %[bagAccu(f),instAccu(f)] = ConventMultiPlayerInst2SinglePlayer([subfolder '/' fileLists(f).name],5,str2double(playerNum));
+                [bagAccu(f),instAccu(f)] = ConventMultiPlayerInst2SinglePlayerThreshold([subfolder '/' fileLists(f).name],5,str2double(playerNum));
             end
 
             clear fileLists
             
-            resultFile = [strrep(subfolder,'multiPlayers','multiPlayers/Convert') '/' SVMType '.data.result']
+            %resultFile = [strrep(subfolder,'multiPlayers','multiPlayers/Convert') '/' SVMType '.data.result']
+            resultFile = [strrep(subfolder,'multiPlayers','multiPlayers/Convert(th)') '/' SVMType '.data.result']
             str = ['Bag label accuracy = ' num2str(mean(bagAccu)) ', Instance label accuracy = ' num2str(mean(instAccu)) ', '];
             fid = fopen(resultFile,'w');
             fprintf(fid, str);
