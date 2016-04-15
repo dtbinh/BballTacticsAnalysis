@@ -18,6 +18,7 @@ load([workingDir '/S.mat']);
 % Load Half-court Image
 court = imread([workingDir '/court.png']);
 court = court(:, 326:end, :);
+[h w c] = size(court);
 % leftHalfCourt = court(:,1:325,:);
 % rightHalfCourt = court(:,326:end,:);
 
@@ -78,16 +79,19 @@ end
 
 bballZone = LoadBasketballCourtParam(court);
 
+frameRate = 30;
 for T = 1:size(gtSAlign,1)
     for p = 1:size(gtSAlign,2)
-        gtVAlignSync{T,p} = makeDerivativeOfTime(gtSAlignSync{T,p});
-        gtVAlign{T,p} = makeDerivativeOfTime(gtSAlign{T,p});
+        gtSAlignSyncN{T,p}(:,1) = gtSAlignSync{T,p}(:,1)/w;
+        gtSAlignSyncN{T,p}(:,2) = gtSAlignSync{T,p}(:,2)/h;
+        gtVAlignSync{T,p} = makeDerivativeOfTime(gtSAlignSyncN{T,p},frameRate);
+        gtVAlign{T,p} = makeDerivativeOfTime(gtSAlign{T,p},frameRate);
     end
 end
 % flip = 1;
 % gtSAlignSyncFlip = GenerateSyncData(gtSAlign,tactics,flip);
 stageNum = 10;
-gtStagePosition = DownSamplingFeature(gtSAlignSync,stageNum);
+gtStagePosition = DownSamplingFeature(gtSAlignSyncN,stageNum);
 
 gtStageVelocity = DownSamplingFeature(gtVAlignSync,stageNum);
 
