@@ -1,6 +1,6 @@
 function [test_bag_label, test_inst_label, test_bag_prob, test_inst_prob] = bag_MI_SVM(para, train_bags, test_bags)
 
-global preprocess;
+global preprocess train_label_predict train_prob_predict;
 global temp_train_file temp_test_file temp_output_file temp_model_file libSVM_dir; 
 
 num_train_bag = length(train_bags);

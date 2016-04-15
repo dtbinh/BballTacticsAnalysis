@@ -3,7 +3,7 @@
 
 function run = MIL_Cross_Validate(data_file, classifier_wrapper_handle, classifier)
 
-global preprocess model;
+global preprocess model train_label_predict train_prob_predict;
 %[X, Y, num_data, num_feature] = preprocessing(D);
 %clear D;
 [bags, num_data, num_feature] = MIL_Data_Load(data_file);
@@ -39,13 +39,59 @@ for i = 1:num_folder
   %copyfile('temp/temp.output.txt',[preprocess.WorkingDir '/' strtok(preprocess.input_file,'.') '/cross_validate/' classifier '_iter' int2str(i) '_' classifier '.txt']);
   %copyfile('temp/temp.output.txt',[strtok(preprocess.input_file,'.') '/cross_validate/' classifier '_iter' int2str(i) '_' classifier '.txt']);
   k = strfind(preprocess.output_file,'.data.result');
-  testbags = bags(testindex);
-  %tranibags = bags(trainindex);
+  
+  % save trainbags svm final result
+  trainbags = bags(trainindex);
+  filename = [preprocess.output_file(1:k-1) '_training' int2str(i) '.txt'];
+  fid = fopen(filename,'w');
+  fprintf(fid,'bagName  bagPred  bagTruth  bagProb  instPred  instTruth  instProb \n');
+
+  %Positive = 0;
+  %Negative=  0;
+  truePositive = 0;
+  trueNegative = 0;
+  falsePositive= 0;
+  falseNegative= 0;    
+
+  idx = 0;
+  for j = 1:length(trainbags)
+    [num_inst, num_feature] = size(trainbags(j).instance);
+%     idx+1 : idx+num_inst
+%     train_prob_predict (idx+1 : idx+num_inst)
+%     train_label_predict (idx+1 : idx+num_inst)
+%     str_inst_prob = '';
+%     for i= 1:num_inst
+%         str_inst_prob = [str_inst_prob ' ' num2str(train_prob_predict(idx+i),'%.3f')];
+%     end
+    str = [trainbags(j).name '  ' int2str(max(train_prob_predict (idx+1 : idx+num_inst))>0.5) '  ' int2str(trainbags(j).label) '    ' num2str(max(train_prob_predict(idx+1 : idx+num_inst)),'%.3f') ';  ' ...
+        num2str(train_label_predict(idx+1 : idx+num_inst)','%d') '  ' num2str(trainbags(j).inst_label,'%d') '  ' num2str(train_prob_predict(idx+1 : idx+num_inst)','% f') '\n'];
+    fprintf(fid, str);
+
+    truePositive = truePositive + sum(and(train_label_predict(idx+1 : idx+num_inst)', trainbags(j).inst_label));
+    trueNegative = trueNegative + sum(and(not(train_label_predict(idx+1 : idx+num_inst)'),not(trainbags(j).inst_label)));
+    falsePositive= falsePositive + sum(and(not(train_label_predict(idx+1 : idx+num_inst)'),trainbags(j).inst_label));
+    falseNegative= falseNegative + sum(and(train_label_predict(idx+1 : idx+num_inst)',not(trainbags(j).inst_label)));
+    
+    idx = idx + num_inst;
+  end
+  
+  Accu = (truePositive+trueNegative)/(truePositive+trueNegative+falsePositive+falseNegative);
+  Prec = truePositive/(truePositive+falsePositive);
+  Reca = truePositive/(truePositive+falseNegative);
+  F1 = 2*truePositive/(2*truePositive+falsePositive+falseNegative);
+  fprintf(fid,'\n');
+  fprintf(fid,'TP TN FP FN Accu Prec Reca F1 \n');
+  str1 = [int2str(truePositive) ' ' int2str(trueNegative) ' ' int2str(falsePositive) ' ' int2str(falseNegative) ' ' num2str(Accu,'%.3f') ' ' num2str(Prec,'%.3f') ' ' num2str(Reca,'%.3f') ' ' num2str(F1,'%.3f')];
+  fprintf(fid, str1);
+  fclose(fid);
+  
   
   %record model txt file
   %copyfile([preprocess.WorkingDir '/temp/temp.model.txt'],[preprocess.output_file(1:k-1) '_model' int2str(i) '.txt']);
   save([preprocess.output_file(1:k-1) '_model' int2str(i) '.mat'],'model','-mat');
   
+  % save testbags svm final result
+  testbags = bags(testindex);
   filename = [preprocess.output_file(1:k-1) '_validate' int2str(i) '.txt'];
   fid = fopen(filename,'w');
   fprintf(fid,'bagName  bagPred  bagTruth  bagProb  instPred  instTruth  instProb \n');
@@ -62,7 +108,7 @@ for i = 1:num_folder
     %for j = 1:num_inst
         %str = [bags(i).name ',' cell2mat(bags(i).inst_name(j)) ',' feature_line(bags(i).instance(j,:)) num2str(bags(i).inst_label(j)) '\n'];
         str = [testbags(j).name '  ' int2str(run_class(i).bag_label(j)) '  ' int2str(testbags(j).label) '    ' num2str(run_class(i).bag_prob(j),'%.3f') ';  ' ...
-            num2str(run_class(i).inst_label((j-1)*num_inst+1:j*num_inst)','%d') '  ' num2str(testbags(j).inst_label,'%d') '  ' num2str(run_class(i).inst_prob((j-1)*num_inst+1:j*num_inst)','% .3f') '\n'];
+            num2str(run_class(i).inst_label((j-1)*num_inst+1:j*num_inst)','%d') '  ' num2str(testbags(j).inst_label,'%d') '  ' num2str(run_class(i).inst_prob((j-1)*num_inst+1:j*num_inst)','% f') '\n'];
         fprintf(fid, str);
     %end
     %Positive = Positive + sum(testbags(j).inst_label);
