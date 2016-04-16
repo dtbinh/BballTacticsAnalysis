@@ -1,12 +1,12 @@
 function TuneSVMParam(targetDir,playerNum,tacticSelect,EvaluationSelect,datasetSelect,featureSelect,SVMType,SVMKernelType)
 
-weightNum = 1;
+weightNum = length(param.negativeWeight);
 
-KernelParamO = 0.05;
+KernelParamO = param.kernel0;
 CostFactorO  = 1;
 NegativeWeightO = 1;
-for i = -3:3
-    for j=-3:3
+for i = param.kernel
+    for j= param.cost
         for k=0:weightNum-1
             KernelParam = 2^i*KernelParamO;
             CostFactor  = 2^j*CostFactorO;
@@ -72,8 +72,10 @@ end
 % set(gca,'XScale','log','YScale','log');
 for n=1:weightNum
     NegativeWeight=2^(n-1)*NegativeWeightO;
-    subplot(weightNum,3,3*(n-1)+1),contour(reshape(bag(:,:,n),7,7));
-    set(gca,'XTickLabel',[0.05/8 0.05/4 0.05/2 0.05 0.1 0.2 0.4],'YTickLabel',[1/8 1/4 1/2 1 2 4 8]);
+    sizeKernel = length(param.kernel);
+    sizeCost   = length(param.cost);
+    subplot(weightNum,3,3*(n-1)+1),contour(reshape(bag(:,:,n),sizeKernel,sizeCost));
+    set(gca,'XTickLabel',param.kernel,'YTickLabel',param.cost);
     xlabel('KernelParam');
     ylabel('Cost Factor');
     title([svmType '/BagAccuray (Negative Weight=' num2str(NegativeWeight) ')']);
@@ -83,10 +85,9 @@ for n=1:weightNum
     disp('bag');
     bag(:,:,n)
 
-    subplot(weightNum,3,3*(n-1)+2),contour(reshape(inst(:,:,n),7,7));
-    kernel = [0.05/8 0.05/4 0.05/2 0.05 0.1 0.2 0.4];
-    cost   = [1/8 1/4 1/2 1 2 4 8];
-    set(gca,'XTickLabel',kernel,'YTickLabel',cost);
+    subplot(weightNum,3,3*(n-1)+2),contour(reshape(inst(:,:,n),sizeKernel,sizeCost));
+
+    set(gca,'XTickLabel',param.kernel,'YTickLabel',param.cost);
     xlabel('KernelParam');
     ylabel('Cost Factor');
     title([svmType '/InstAccuray (Negative Weight=' num2str(NegativeWeight) ')']);
@@ -103,10 +104,8 @@ for n=1:weightNum
     % instLabel.Accu(:,:,4)
     % instLabel.Prec(:,:,4)
     % instLabel.Reca(:,:,4)
-    subplot(weightNum,3,3*(n-1)+3),contour(reshape(instLabel.F1(:,:,n),7,7));
-    kernel = [0.05/8 0.05/4 0.05/2 0.05 0.1 0.2 0.4];
-    cost   = [1/8 1/4 1/2 1 2 4 8];
-    set(gca,'XTickLabel',kernel,'YTickLabel',cost);
+    subplot(weightNum,3,3*(n-1)+3),contour(reshape(instLabel.F1(:,:,n),sizeKernel,sizeCost));
+    set(gca,'XTickLabel',param.kernel,'YTickLabel',param.cost);
     xlabel('KernelParam');
     ylabel('Cost Factor');
     title([svmType '/InstF1 (Negative Weight=' num2str(NegativeWeight) ')']);
@@ -148,6 +147,8 @@ disp(['KernelParmN1=' num2str(tempKernel(1)) ', CostFactorN1=' num2str(tempCost(
 if ~isempty(playerNum)
     optimalFiles = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(optimalKernel) 'C=' num2str(optimalCost) 'N=' num2str(optimalNegativeWeight) '/' SVMType];
     outputFolder = strrep(optimalFiles,'tuning','result');
+    filesepIdx = strfind(outputFolder,'/');
+    outputFolder = outputFolder(1:filesepIdx(end));
 else
     optimalFiles = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(optimalKernel) 'C=' num2str(optimalCost) 'N=' num2str(optimalNegativeWeight) '/' SVMType];
     outputFolder = strrep(optimalFiles,'tuning','result');
@@ -158,5 +159,18 @@ if ~exist(outputFolder,'dir')
     mkdir(outputFolder)
 end
 copyfile([optimalFiles '*'],outputFolder);
+originalFiles = strrep(optimalFiles,'Convert(Th)/','');
+originalFilesOutFolder = strrep(originalFiles,'tuning','result');
+filesepIdx = strfind(originalFilesOutFolder,'/');
+originalFilesOutFolder = originalFilesOutFolder(1:filesepIdx(end))
+if ~exist(originalFilesOutFolder,'dir')
+    mkdir(originalFilesOutFolder)
+end
+copyfile([originalFiles '*'],originalFilesOutFolder(1:filesepIdx(end)));
+
+% set(gcf,'units','normalized','position',[0 0 1 1]);
+set(gcf,'outerposition',get(0,'screensize'));
+set(gcf,'PaperPositionMode','auto');
+saveas(gcf,[outputFolder '/SVMParamTune.png']);
 
 end
