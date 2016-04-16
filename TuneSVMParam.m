@@ -1,4 +1,4 @@
-function TuneSVMParam(targetDir,playerNum,tacticSelect,EvaluationSelect,datasetSelect,featureSelect,SVMType,SVMKernelType)
+function TuneSVMParam(param,targetDir,playerNum,tacticSelect,EvaluationSelect,datasetSelect,featureSelect,SVMType,SVMKernelType)
 
 weightNum = length(param.negativeWeight);
 
@@ -32,8 +32,8 @@ for i = param.kernel
             [token, remain] = strtok(tline,',');
             [~, sbag] = strtok(token,'=');
             [~, sinst]= strtok(remain,'=');
-            bag(i+4,j+4,k+1) = str2num(sbag(2:end));
-            inst(i+4,j+4,k+1)= str2num(sinst(2:end));
+            bag(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = str2num(sbag(2:end));
+            inst(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1)= str2num(sinst(2:end));
             for v=1:length(dir([subfolder '/' SVMType '_validate*']))
                fid  = fopen([subfolder '/' SVMType '_validate' int2str(v) '.txt'],'r');
                while ~feof(fid)
@@ -47,14 +47,14 @@ for i = param.kernel
             C(isnan(C)) = 0;
             result = mean(C,1);
             clear C
-            instLabel.tp(i+4,j+4,k+1) = result(1);
-            instLabel.tn(i+4,j+4,k+1) = result(2);
-            instLabel.fp(i+4,j+4,k+1) = result(3);
-            instLabel.fn(i+4,j+4,k+1) = result(4);
-            instLabel.Accu(i+4,j+4,k+1) = result(5);
-            instLabel.Prec(i+4,j+4,k+1) = result(6);
-            instLabel.Reca(i+4,j+4,k+1) = result(7);
-            instLabel.F1(i+4,j+4,k+1)   = result(8);
+            instLabel.tp(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(1);
+            instLabel.tn(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(2);
+            instLabel.fp(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(3);
+            instLabel.fn(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(4);
+            instLabel.Accu(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(5);
+            instLabel.Prec(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(6);
+            instLabel.Reca(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(7);
+            instLabel.F1(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1)   = result(8);
             %pause
         end
     end
@@ -75,9 +75,21 @@ for n=1:weightNum
     sizeKernel = length(param.kernel);
     sizeCost   = length(param.cost);
     subplot(weightNum,3,3*(n-1)+1),contour(reshape(bag(:,:,n),sizeKernel,sizeCost));
-    set(gca,'XTickLabel',param.kernel,'YTickLabel',param.cost);
-    xlabel('KernelParam');
-    ylabel('Cost Factor');
+    strKernel = {};
+    strCost = {};
+    for sk = 1:sizeKernel
+        strKernel{sk} = num2str(param.kernel(sk),'%d');
+    end
+    for sC = 1:sizeCost
+        strCost{sC} = num2str(param.cost(sC),'%d');
+    end
+    set(gca,'XTick',[1:1:sizeCost],'YTick',[1:1:sizeKernel]);
+    set(gca,'XTickLabel',strCost,'YTickLabel',strKernel);
+    % set(gca,'Xdir','reverse');
+    set(gca,'Ydir','reverse');
+    
+    xlabel('lg2 Cost Factor');
+    ylabel('lg2 KernelParam');
     title([svmType '/BagAccuray (Negative Weight=' num2str(NegativeWeight) ')']);
     grid on
     colorbar
@@ -87,9 +99,13 @@ for n=1:weightNum
 
     subplot(weightNum,3,3*(n-1)+2),contour(reshape(inst(:,:,n),sizeKernel,sizeCost));
 
-    set(gca,'XTickLabel',param.kernel,'YTickLabel',param.cost);
-    xlabel('KernelParam');
-    ylabel('Cost Factor');
+    set(gca,'XTick',[1:1:sizeCost],'YTick',[1:1:sizeKernel]);
+    set(gca,'XTickLabel',strCost,'YTickLabel',strKernel);
+    % set(gca,'Xdir','reverse');
+    set(gca,'Ydir','reverse');    
+    
+    xlabel('lg2 Cost Factor');
+    ylabel('lg2 KernelParam');    
     title([svmType '/InstAccuray (Negative Weight=' num2str(NegativeWeight) ')']);
     grid on
     axis square
@@ -105,9 +121,14 @@ for n=1:weightNum
     % instLabel.Prec(:,:,4)
     % instLabel.Reca(:,:,4)
     subplot(weightNum,3,3*(n-1)+3),contour(reshape(instLabel.F1(:,:,n),sizeKernel,sizeCost));
-    set(gca,'XTickLabel',param.kernel,'YTickLabel',param.cost);
-    xlabel('KernelParam');
-    ylabel('Cost Factor');
+
+    set(gca,'XTick',[1:1:sizeCost],'YTick',[1:1:sizeKernel]);
+    set(gca,'XTickLabel',strCost,'YTickLabel',strKernel);
+    % set(gca,'Xdir','reverse');
+    set(gca,'Ydir','reverse');
+    
+    xlabel('lg2 Cost Factor');
+    ylabel('lg2 KernelParam');
     title([svmType '/InstF1 (Negative Weight=' num2str(NegativeWeight) ')']);
     grid on
     axis square
@@ -123,10 +144,10 @@ for n=1:weightNum
     disp('max combinede Accurcy')
     disp(['row ' int2str(row(1)) ', col ' int2str(col(1)) ' combined:' num2str(combineAccu(row(1),col(1)))]);
     disp(['bag:' num2str(bag(row(1),col(1),n)) ', inst:' num2str(inst(row(1),col(1),n)) ', inst_F1:' num2str(instLabel.F1(row(1),col(1),n))]);
-    disp(['kernelParm=' num2str(kernel(col(1))) ', costFactor=' num2str(cost(row(1))) ', NegativeWeight=' num2str(NegativeWeight)]);
+    disp(['kernelParm=' num2str(KernelParamO*2^param.kernel(row(1))) ', costFactor=' num2str(CostFactorO*2^param.cost(col(1))) ', NegativeWeight=' num2str(NegativeWeight)]);
     tempF1(n) = instLabel.F1(row(1),col(1),n);
-    tempKernel(n) = kernel(col(1));
-    tempCost(n) = cost(row(1));
+    tempKernel(n) = KernelParamO*2^param.kernel(row(1));
+    tempCost(n) = CostFactorO*2^param.cost(col(1));
     tempNegativeWeight(n) = NegativeWeight;
 end
 
@@ -152,6 +173,8 @@ if ~isempty(playerNum)
 else
     optimalFiles = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(optimalKernel) 'C=' num2str(optimalCost) 'N=' num2str(optimalNegativeWeight) '/' SVMType];
     outputFolder = strrep(optimalFiles,'tuning','result');
+    filesepIdx = strfind(outputFolder,'/');
+    outputFolder = outputFolder(1:filesepIdx(end));
 end
 
 
@@ -162,11 +185,11 @@ copyfile([optimalFiles '*'],outputFolder);
 originalFiles = strrep(optimalFiles,'Convert(Th)/','');
 originalFilesOutFolder = strrep(originalFiles,'tuning','result');
 filesepIdx = strfind(originalFilesOutFolder,'/');
-originalFilesOutFolder = originalFilesOutFolder(1:filesepIdx(end))
+originalFilesOutFolder = originalFilesOutFolder(1:filesepIdx(end));
 if ~exist(originalFilesOutFolder,'dir')
     mkdir(originalFilesOutFolder)
 end
-copyfile([originalFiles '*'],originalFilesOutFolder(1:filesepIdx(end)));
+copyfile([originalFiles '*'],originalFilesOutFolder);
 
 % set(gcf,'units','normalized','position',[0 0 1 1]);
 set(gcf,'outerposition',get(0,'screensize'));
