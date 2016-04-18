@@ -61,8 +61,8 @@ switch kernelType
  	    MIL_Run(['classify -t ' inputfile ' -o ' ... 
 	        subfolder SVMType '.data.result -p ' subfolder SVMType '.data.pred -if 0 ¡Vn ' normalization ' -distrib 0 ' EvalCmd ' -- ' SVMType '_SVM -Kernel 0']);
     case 'RBF'
-		for i = param.kernel
-		    for j= param.cost
+        for i = param.kernel
+            for j= param.cost            
 		        for k= param.negativeWeight
             		KernelParam = 2^i*KernelParamO;
             		CostFactor  = 2^j*CostFactorO;
