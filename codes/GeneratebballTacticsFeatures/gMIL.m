@@ -55,6 +55,7 @@ end
 % [gtSAlignSyncConcatPV,~] = GenerateSyncData(gtSAlign,tactics,'concat','P+V');
 [gtSAlignSync,~] = GenerateSyncData(gtSAlign,tactics,'concat','P+V');
 
+
 % if ~exist('gtSAlignSyncFirst.mat','file')
 %     [gtSAlignSyncFirst,~] = GenerateSyncDataPV(gtSAlign,tactics,'first');
 % else
@@ -127,6 +128,8 @@ GenerateMILFeature(playerNum,featureName,MILLFeatureData,tactics,gtCentroidAssig
 % single player raw nonsync feature (P,V)
 GenerateMILFeature(playerNum,featureName(1:2),NonSyncMILLFeatureData,tactics,gtCentroidAssign,~SYNC)
 
+
+% Hard Assigment
 zoneFeature = {'ZoneDist'};
 
 if ~exist('gtSZone.mat','file')
@@ -154,6 +157,33 @@ mKeyPlayer{1} = tactics.keyPlayer;
 % =================================================================================================
 for playerNum = 1:5
     GenerateMILFeature(playerNum,zoneFeature,gtStageZoneProbM,tactics,gtCentroidAssign,SYNC,mKeyPlayer{1});
+end
+
+% Soft Assignment
+basketballArea = LoadBasketballCourtArea;
+radius = 10;
+minW = 1e-3;
+for v = 1:size(gtSAlignSync,1)
+    for p = 1:size(gtSAlignSync,2)
+        for f = 1:size(gtSAlignSync{v,p},1)
+            %gtSAreaSoftAssign{v,p}(f,:) = zeros(1,length(basketballArea));
+            c = gtSAlignSync{v,p}(f,1);
+            r = gtSAlignSync{v,p}(f,2);
+            for a = 1:length(basketballArea)
+                distArray(a) = sqrt((c-basketballArea(a).CenterPosition(1))^2+ (r-basketballArea(a).CenterPosition(2))^2);
+            end
+            GMMWeight = exp(-distArray./(radius*2));
+            GMMWeight = GMMWeight/sum(GMMWeight);
+            GMMWeight(find(GMMWeight<minW)) = 0;
+            gtSAreaSoftAssign{v,p}(f,:) = GMMWeight;
+        end
+    end
+end
+gtPhaseAreaProb = DownSamplingFeature(gtSAreaSoftAssign,stageNum);
+gtPhaseAreaProbM{1} = gtPhaseAreaProb;
+zoneFeature = {'AreaSoftAssignDist'};
+for playerNum = 1:5
+    GenerateMILFeature(playerNum,zoneFeature,gtPhaseAreaProbM,tactics,gtCentroidAssign,SYNC ,tactics.keyPlayer);
 end
 
 % if outputFeature
@@ -234,3 +264,4 @@ end
 
 rmpath(genpath('utility'));
 rmpath(genpath(workingDir));
+end
