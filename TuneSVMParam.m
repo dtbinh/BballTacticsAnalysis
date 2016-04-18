@@ -3,7 +3,7 @@ function TuneSVMParam(param,targetDir,playerNum,tacticSelect,EvaluationSelect,da
 weightNum = length(param.negativeWeight);
 
 KernelParamO = param.kernel0;
-CostFactorO  = 1;
+CostFactorO  = param.cost0;%1;
 NegativeWeightO = 1;
 for i = param.kernel
     for j= param.cost
@@ -88,8 +88,8 @@ for n=1:weightNum
     % set(gca,'Xdir','reverse');
     set(gca,'Ydir','reverse');
     
-    xlabel('lg2 Cost Factor');
-    ylabel('lg2 KernelParam');
+    xlabel(['lg2 Cost Factor (base ' num2str(CostFactorO) ')']);
+    ylabel(['lg2 KernelParam (base ' num2str(KernelParamO) ')']);
     title([svmType '/BagAccuray (Negative Weight=' num2str(NegativeWeight) ')']);
     grid on
     colorbar
@@ -104,8 +104,8 @@ for n=1:weightNum
     % set(gca,'Xdir','reverse');
     set(gca,'Ydir','reverse');    
     
-    xlabel('lg2 Cost Factor');
-    ylabel('lg2 KernelParam');    
+    xlabel(['lg2 Cost Factor (base ' num2str(CostFactorO) ')']);
+    ylabel(['lg2 KernelParam (base ' num2str(KernelParamO) ')']);
     title([svmType '/InstAccuray (Negative Weight=' num2str(NegativeWeight) ')']);
     grid on
     axis square
@@ -127,8 +127,8 @@ for n=1:weightNum
     % set(gca,'Xdir','reverse');
     set(gca,'Ydir','reverse');
     
-    xlabel('lg2 Cost Factor');
-    ylabel('lg2 KernelParam');
+    xlabel(['lg2 Cost Factor (base ' num2str(CostFactorO) ')']);
+    ylabel(['lg2 KernelParam (base ' num2str(KernelParamO) ')']);
     title([svmType '/InstF1 (Negative Weight=' num2str(NegativeWeight) ')']);
     grid on
     axis square
