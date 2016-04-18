@@ -55,6 +55,8 @@ end
 % [gtSAlignSyncConcatPV,~] = GenerateSyncData(gtSAlign,tactics,'concat','P+V');
 [gtSAlignSync,~] = GenerateSyncData(gtSAlign,tactics,'concat','P+V');
 
+courtArea = imread('courtZone.png');
+ShowTrajOnCourtArea(gtSAlignSync,tactics,courtArea)
 
 % if ~exist('gtSAlignSyncFirst.mat','file')
 %     [gtSAlignSyncFirst,~] = GenerateSyncDataPV(gtSAlign,tactics,'first');
