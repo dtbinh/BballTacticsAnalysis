@@ -2,19 +2,10 @@ clear all
 
 addpath(genpath([pwd '/codes/MILL']));
 
-
-% multiplayer region-temporal kernel param 0 (stage 10)
-% param.kernel0 = 1/(11*10);  % 11regions*stageNume
-
-% % single player temporal 
-% param.kernel0 = 1/(2*10);
-
-% default kernel0
-param.kernel0 = 1;
-
-param.kernel = 3:-1:-15;
-param.cost = 15:-1:-5;
+param.kernel = 5:-1:-5;
+param.cost = 10:-1:-5;
 param.negativeWeight = 0;
+param.iter = 10;
 
 BenchResult(param,'cross_validate','RBF','inst_MI');
 
