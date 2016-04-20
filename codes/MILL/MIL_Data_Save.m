@@ -3,6 +3,8 @@ function MIL_Data_Save(filename, bags)
 fid = fopen(filename, 'w');
 if fid == -1, error('Cannot open the file for saving'); end;
 
+filesepIdx = strfind(filename,'/');
+display([filename(filesepIdx(end)+1:end) ' saving...']);
 for i = 1:length(bags)
     [num_inst, num_feature] = size(bags(i).instance);
     for j = 1:num_inst
