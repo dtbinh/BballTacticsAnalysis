@@ -51,8 +51,8 @@ for f=1:nbfiles
     preprocess.Normalization = 0;
     preprocess.Shuffled = 0;
     [~, ~, num_feature] = MIL_Data_Load(inputfile);
-    num_feature
-    pause(5)
+%     num_feature
+%     pause(5)
     clear preprocess
     KernelParamO = 1/num_feature;  %KernelParamO = 0.05 (default);
     CostFactorO  = 1;
