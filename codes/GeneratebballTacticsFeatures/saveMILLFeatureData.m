@@ -16,7 +16,7 @@ for ref = 1:length(tactics.refVideoIndex)
     nonTacticIndex{ref} = [];
     nonTacticIndex = cell2mat(nonTacticIndex);
     tacticIndex = tactics.videoIndex{ref};
-    if ~exist('mKeyPlayerIndex','var')
+    if ~exist('mKeyPlayerIndex','var') || strcmp(featureName(end),'1')
         CreateBags(DataPath,featureName,MILLFeatureDataAlign,tactics.Name{ref},tacticIndex,nonTacticIndex,tactics.keyPlayer(tacticIndex,:));
     else
         CreateBags(DataPath,featureName,MILLFeatureDataAlign,tactics.Name{ref},tacticIndex,nonTacticIndex,mKeyPlayerIndexCombined(tacticIndex,:));
