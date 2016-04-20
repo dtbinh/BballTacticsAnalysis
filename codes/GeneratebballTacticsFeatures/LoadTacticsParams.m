@@ -33,7 +33,7 @@ tactics.keyPlayer(tactics.videoIndex{4},:)=repmat([1 1 1 0 0],length(tactics.vid
 tactics.gtAlignment(tactics.videoIndex{5},:) = [2 1 4 3 5; 2 1 4 3 5; 2 1 5 3 4; 1 2 4 5 3; 2 1 4 3 5; 2 1 4 3 5; ...
     2 1 4 3 5; 1 2 4 3 5; 5 3 2 4 1; 1 2 3 4 5; 2 1 4 5 3; 1 3 2 5 4; 1 2 4 5 3];
 % PT KeyPlayers
-tactics.keyPlayer(tactics.videoIndex{5},:)=repmat([1 1 0 1 0],length(tactics.videoIndex{5}),1);
+tactics.keyPlayer(tactics.videoIndex{5},:)=repmat([1 1 1 1 0],length(tactics.videoIndex{5}),1);
 
 % RB Alignment
 tactics.gtAlignment(tactics.videoIndex{6},:) = [5 1 2 4 3; 5 1 2 4 3; 3 1 2 5 4; 3 1 2 4 5; 3 1 2 4 5; 3 1 2 4 5; ...
