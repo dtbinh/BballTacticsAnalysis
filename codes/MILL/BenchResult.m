@@ -64,12 +64,15 @@ for f=1:nbfiles
         case 'linear'
             
             for iter = 1:param.iter
-                
-            subfolder = [outFolder kernelType '/'];
-            mkdir(subfolder);
+                if param.iter == 1
+                    subfolder = [outFolder kernelType '/'];
+                else
+                    subfolder = [outFolder kernelType '/iter' int2str(iter) '/'];
+                end
+                mkdir(subfolder);
 
-            MIL_Run(['classify -t ' inputfile ' -o ' ... 
-                subfolder SVMType '.data.result -p ' subfolder SVMType '.data.pred -if 0 ¡Vn ' normalization ' -distrib 0 ' EvalCmd ' -- ' SVMType '_SVM -Kernel 0']);
+                MIL_Run(['classify -t ' inputfile ' -o ' ... 
+                    subfolder SVMType '.data.result -p ' subfolder SVMType '.data.pred -if 0 ¡Vn ' normalization ' -distrib 0 ' EvalCmd ' -- ' SVMType '_SVM -Kernel 0']);
             end
         case 'RBF'
             for i = param.kernel
@@ -78,15 +81,20 @@ for f=1:nbfiles
                         KernelParam = 2^i*KernelParamO;
                         CostFactor  = 2^j*CostFactorO;
                         NegativeWeight=2^k*NegativeWeightO;
+
                         
                         for iter = 1:param.iter
+                            if param.iter == 1
+                                subfolder = [outFolder kernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/'];
+                            else
+                                subfolder = [outFolder kernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/iter' int2str(iter) '/'];
+                            end
+                            
+                            mkdir(subfolder);    
 
-                        subfolder = [outFolder kernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight) '/iter' int2str(iter) '/'];
-                        mkdir(subfolder);    
-
-                        MIL_Run(['classify -t ' inputfile ' -o ' ...
-                            subfolder SVMType '.data.result -p ' subfolder SVMType '.data.pred -if 0 -n ' normalization ' -distrib 0 ' EvalCmd ' -- ' SVMType '_SVM -Kernel 2 -KernelParam ' ...
-                            num2str(KernelParam) ' -CostFactor ' num2str(CostFactor) ' -NegativeWeight ' num2str(NegativeWeight)]);
+                            MIL_Run(['classify -t ' inputfile ' -o ' ...
+                                subfolder SVMType '.data.result -p ' subfolder SVMType '.data.pred -if 0 -n ' normalization ' -distrib 0 ' EvalCmd ' -- ' SVMType '_SVM -Kernel 2 -KernelParam ' ...
+                                num2str(KernelParam) ' -CostFactor ' num2str(CostFactor) ' -NegativeWeight ' num2str(NegativeWeight)]);
                         end
                      end
                 end
