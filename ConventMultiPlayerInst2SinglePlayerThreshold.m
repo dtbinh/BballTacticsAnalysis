@@ -1,6 +1,8 @@
 function [bagAccu,instAccu] = ConventMultiPlayerInst2SinglePlayerThreshold(trainingfilename,validatefilename,playerNum,k)
 
-[bagInfo,instPred,instGt,sinst_prob] = ReadClassificationFile(trainingfilename);
+%[bagInfo,instPred,instGt,sinst_prob] = ReadClassificationFile(trainingfilename);
+[bagInfo,instPred,instGt,sinst_prob] = ReadClassificationFile(validatefilename);
+
 
 C = nchoosek(1:playerNum,k);
 for i = 1:size(C,1)
