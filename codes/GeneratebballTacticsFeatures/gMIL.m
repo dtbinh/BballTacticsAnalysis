@@ -1,4 +1,4 @@
-function gMIL(workingDir)
+function gMIL(workingDir,featureSet)
 % reset system figures and variables
 % clear all
 % close all
@@ -31,8 +31,12 @@ tacCentroid = [1 25 43 49 60 77 93 101 116 134];
 tactics.refVideoIndex = tacCentroid;
 
 Traj = gtSAlign(tacCentroid,:);
-
-[gtCentroidAssign,gtCentroidCost] = FindGTCentroidAlign(tactics,Traj,'P+V');
+if  ~exist('gtCentroidAssign.mat','file')
+    [gtCentroidAssign,gtCentroidCost] = FindGTCentroidAlign(tactics,Traj,'P+V');
+    save('gtCentroidAssign.mat','gtCentroidAssign');
+else
+    load('gtCentroidAssign.mat');
+end
 
 
 fileIO.sourceDir = ['Collected Tactics' filesep 'Total' filesep];
@@ -53,10 +57,14 @@ end
 % [gtSAlignSyncMinMedPV,refMinMedPV] = GenerateSyncData(gtSAlign,tactics,'minMed','P+V');
 % [gtSAlignSyncConcatP,~] = GenerateSyncData(gtSAlign,tactics,'concat','P');
 % [gtSAlignSyncConcatPV,~] = GenerateSyncData(gtSAlign,tactics,'concat','P+V');
-[gtSAlignSync,~] = GenerateSyncData(gtSAlign,tactics,'concat','P+V');
-
-courtArea = imread('courtZone.png');
-ShowTrajOnCourtArea(gtSAlignSync,tactics,courtArea)
+if  ~exist('gtSAlignSync.mat','file')
+    [gtSAlignSync,~] = GenerateSyncData(gtSAlign,tactics,'concat','P+V');
+    save('gtSAlignSync.mat','gtSAlignSync');
+else
+    load('gtSAlignSync.mat');
+end
+% courtArea = imread('courtZone.png');
+% ShowTrajOnCourtArea(gtSAlignSync,tactics,courtArea)
 
 % if ~exist('gtSAlignSyncFirst.mat','file')
 %     [gtSAlignSyncFirst,~] = GenerateSyncDataPV(gtSAlign,tactics,'first');
@@ -80,7 +88,18 @@ ShowTrajOnCourtArea(gtSAlignSync,tactics,courtArea)
 % CompareSyncDataInVideo(tactics,court,gtSAlign,gtSAlignSyncFirstP,gtSAlignSyncFirstPV,...
 %     gtSAlignSyncMinMedP,refMinMedP,gtSAlignSyncMinMedPV,refMinMedPV,gtSAlignSyncConcatP,gtSAlignSyncConcatPV);
 
+
+
 bballZone = LoadBasketballCourtParam(court);
+plotFlag = 1;
+outputFeature = 0;
+SYNC = 1;
+stageNum = 10;
+Zone = 0;
+
+
+
+if ismember(featureSet,{'P','V','P+V'})
 
 frameRate = 30;
 for T = 1:size(gtSAlign,1)
@@ -93,7 +112,7 @@ for T = 1:size(gtSAlign,1)
 end
 % flip = 1;
 % gtSAlignSyncFlip = GenerateSyncData(gtSAlign,tactics,flip);
-stageNum = 10;
+
 gtStagePosition = DownSamplingFeature(gtSAlignSyncN,stageNum);
 
 gtStageVelocity = DownSamplingFeature(gtVAlignSync,stageNum);
@@ -117,11 +136,7 @@ NonSyncMILLFeatureData{2} = DownSamplingFeature(gtVAlign,stageNum);
 % gtStageZoneP = GenerateZoneFeature(gtStageZone,gtStagePosition);
 % gtStageZoneV = GenerateZoneFeature(gtStageZone,gtStageVelocity);
 
-plotFlag = 1;
-outputFeature = 0;
-SYNC = 1;
 
-Zone = 0;
 
 
 playerNum = 1;
@@ -129,8 +144,10 @@ playerNum = 1;
 GenerateMILFeature(playerNum,featureName,MILLFeatureData,tactics,gtCentroidAssign,SYNC)
 % single player raw nonsync feature (P,V)
 GenerateMILFeature(playerNum,featureName(1:2),NonSyncMILLFeatureData,tactics,gtCentroidAssign,~SYNC)
+end
 
 
+if ismember(featureSet,{'ZoneDist'})
 % Hard Assigment
 zoneFeature = {'ZoneDist'};
 
@@ -160,11 +177,15 @@ mKeyPlayer{1} = tactics.keyPlayer;
 for playerNum = 1:5
     GenerateMILFeature(playerNum,zoneFeature,gtStageZoneProbM,tactics,gtCentroidAssign,SYNC,mKeyPlayer{1});
 end
+end
 
 % Soft Assignment
 basketballArea = LoadBasketballCourtArea;
-radius = 10;
+radius = 15;
 minW = 1e-3;
+
+if ismember(featureSet,{'ZoneSoftAssignDist'})
+
 for v = 1:size(gtSAlignSync,1)
     for p = 1:size(gtSAlignSync,2)
         for f = 1:size(gtSAlignSync{v,p},1)
@@ -183,10 +204,55 @@ for v = 1:size(gtSAlignSync,1)
 end
 gtPhaseAreaProb = DownSamplingFeature(gtSAreaSoftAssign,stageNum);
 gtPhaseAreaProbM{1} = gtPhaseAreaProb;
-zoneFeature = {'AreaSoftAssignDist'};
-for playerNum = 1:5
+zoneFeature = {'ZoneSoftAssignDist'};
+for playerNum = 2:5
     GenerateMILFeature(playerNum,zoneFeature,gtPhaseAreaProbM,tactics,gtCentroidAssign,SYNC ,tactics.keyPlayer);
 end
+
+end
+if ismember(featureSet,{'ZoneVelocitySoftAssign'});
+Direction = [0 1/4 1/2 3/4 1 -3/4 -1/2 -1/4]*pi;
+frameRate = 30;
+% velocity soft assignment
+for T = 1:size(gtSAlignSync,1)
+    disp(['Video ' int2str(T) ' processing ...']);
+    for p = 1:size(gtSAlignSync,2)
+        for f = 1:size(gtSAlignSync{T,p},1)
+            c = gtSAlignSync{T,p}(f,1);
+            r = gtSAlignSync{T,p}(f,2);
+            for a = 1:length(basketballArea)
+                distArray(a) = sqrt((c-basketballArea(a).CenterPosition(1))^2+ (r-basketballArea(a).CenterPosition(2))^2);
+            end
+            GMMWeight = exp(-distArray./(radius*2));
+            GMMWeight = GMMWeight/sum(GMMWeight);
+            GMMWeight(find(GMMWeight<minW)) = 0;
+            
+            if f ~= size(gtSAlignSync{T,p},1)
+                v = frameRate*(gtSAlignSync{T,p}(f+1,:) - gtSAlignSync{T,p}(f,:));
+            else
+                v = frameRate*(gtSAlignSync{T,p}(f,:) - gtSAlignSync{T,p}(f-1,:));
+            end
+            vMag = sqrt(v(1)^2+v(2)^2);
+            vAng = atan2(v(2),v(1));
+            for t = 1:length(Direction)
+                %weight(t) = cos((vAng-Direction(t))/2)^4;
+                weight(t) = circ_vmpdf(Direction(t),vAng,2);
+            end
+            Prob = weight/sum(weight);
+            for a = 1:length(basketballArea)
+                gtVZoneSoftAssign{T,p}(f,(a-1)*length(Direction)+1:a*length(Direction)) = GMMWeight(a)*Prob*vMag;
+            end
+        end
+    end
+end
+gtVPhaseAreaProb = DownSamplingFeature(gtVZoneSoftAssign,stageNum);
+gtVPhaseAreaProbM{1} = gtVPhaseAreaProb;
+zoneFeature = {'ZoneVelocitySoftAssign'};
+for playerNum = 2:5
+    GenerateMILFeature(playerNum,zoneFeature,gtVPhaseAreaProbM,tactics,gtCentroidAssign,SYNC ,tactics.keyPlayer);
+end
+end
+
 
 % if outputFeature
 %     for f = 1:length(featureName)
