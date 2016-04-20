@@ -4,7 +4,7 @@ close all
 
 addpath(genpath([pwd '/codes/GeneratebballTacticsFeatures']));
 
-gMIL('codes/GeneratebballTacticsFeatures',{'ZoneSoftAssignDist'}); %{'ZoneVelocitySoftAssign'});
+gMIL('codes/GeneratebballTacticsFeatures',{'ZoneDist'}); %ZoneSoftAssignDist'}); %{'ZoneVelocitySoftAssign'});
 
 
 rmpath(genpath([pwd '/codes/GeneratebballTacticsFeatures']));
