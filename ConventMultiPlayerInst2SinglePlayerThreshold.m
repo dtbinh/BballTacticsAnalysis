@@ -198,6 +198,6 @@ fid = fopen(newFilePath,'w');
   fclose(fid);
 
 instAccu = Accu;
-bagAccu = sum(~xor(max(Y_prob,[],2)>0.5,max(playerGT_label,[],2)))/size(Y_prob,1);
-  
+% original 0.5 threshold
+bagAccu = sum(~xor(max(Y_prob,[],2)>threshold,max(playerGT_label,[],2)))/size(Y_prob,1); 
 end
