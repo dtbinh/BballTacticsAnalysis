@@ -3,7 +3,7 @@ function TuneSVMParam(param,targetDir,playerNum,tacticSelect,EvaluationSelect,da
 weightNum = length(param.negativeWeight);
 
 KernelParamO = param.kernel0;
-CostFactorO  = param.cost0;%1;
+CostFactorO  = 1;
 NegativeWeightO = 1;
 for i = param.kernel
     for j= param.cost
