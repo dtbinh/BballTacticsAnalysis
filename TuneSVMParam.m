@@ -24,6 +24,20 @@ for i = param.kernel
                 subfolder = [targetDir '/' tacticSelect '/' datasetSelect '/' lower(tacticSelect) lower(featureSelect) '/' EvaluationSelect '/svm/k=' num2str(KernelParam) 'c=' num2str(CostFactor) 'n=' num2str(NegativeWeight)];
                 fid  = fopen([subfolder '/' lower(SVMType) '.data.result'],'r');
             end
+            % skip files if files are not existed
+            if fid == -1
+                disp(['skip ' subfolder '!!']);
+                instLabel.tp(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = 0;
+                instLabel.tn(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = 0;
+                instLabel.fp(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = 0;
+                instLabel.fn(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = 0;
+                instLabel.Accu(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = 0;
+                instLabel.Prec(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = 0;
+                instLabel.Reca(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = 0;
+                instLabel.F1(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1)   = 0;
+                pause(3)
+                continue
+            end
             while ~feof(fid)
                 tline = fgetl(fid);
             end
