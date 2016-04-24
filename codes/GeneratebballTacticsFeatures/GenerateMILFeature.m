@@ -1,9 +1,9 @@
 function GenerateMILFeature(playerNum,featureName,featureData,tactics,assign,syncFlag,mKeyPlayerIndex)
 
-if playerNum ~= 1
-    playerFolder = 'multiPlayers';
-else
+if playerNum == 1
     playerFolder = 'singlePlayer';
+else
+    playerFolder = 'multiPlayers';
 end
 if ~exist('syncFlag','var') || syncFlag
     syncFlag = 1;
