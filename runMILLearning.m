@@ -9,10 +9,10 @@ param.iter = 1; %default is 1
 
 BenchResult(param,'cross_validate','RBF','inst_MI');
 
-BenchResult(param,'cross_validate','RBF','bag_MI');
+% BenchResult(param,'cross_validate','RBF','bag_MI');
 
-BenchResult(param,'cross_validate','linear','inst_MI');
+% BenchResult(param,'cross_validate','linear','inst_MI');
 
-BenchResult(param,'cross_validate','linear','bag_MI');
+% BenchResult(param,'cross_validate','linear','bag_MI');
 
 rmpath(genpath([pwd '/codes/MILL']));
