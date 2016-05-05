@@ -18,9 +18,12 @@ num_folder = preprocess.NumCrossFolder;
   run.bag_pred = zeros(num_data, 3);
   run.bag_pred(:, 1) = (1:num_data)';
 
+% check and ensure each fold has enough positive bags (average distribute)
+bags = MIL_CheckPositiveBagsInFolds(bags,num_folder,0);
+% debug mode  
+% bags = MIL_CheckPositiveBagsInFolds(bags,num_folder,1);
+% pause(1)
 
-  
-  
 for i = 1:num_folder
   fprintf('Iteration %d ......\n', i);  
   % Generate the data indeces for the testing data
