@@ -1,7 +1,14 @@
 function [bags, num_data, num_feature] = MIL_Data_Load(filename)
 
 global preprocess;
-
+mat_file = [strtok(filename,'.') '.mat'];
+if exist(mat_file,'file')
+    load(mat_file);
+    for nbag = 1:length(bags)
+        bags(nbag).label = any(bags(nbag).inst_label);
+    end
+        
+else
 matrix_file = [filename '.matrix'];
 label_file  = [filename '.label'];
 insts = [];
@@ -62,6 +69,7 @@ if (nbag >= 1)
     bags(nbag).label = any(bags(nbag).inst_label);
 end;
 fclose(fid);
+end
 
 num_data = length(bags);
 num_feature = size(bags(1).instance, 2);

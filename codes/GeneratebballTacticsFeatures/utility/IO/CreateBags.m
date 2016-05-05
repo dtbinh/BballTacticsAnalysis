@@ -21,5 +21,6 @@ function bags = CreateBags(dataPath,featureSelect,feature,tacticName,positiveBag
             
         end
     end
+    save([dataPath filesep tacticName featureSelect '.mat'], 'bags');
     MIL_Data_Save([dataPath filesep tacticName featureSelect '.data'],bags);
 end
