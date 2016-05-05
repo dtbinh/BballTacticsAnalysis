@@ -1,20 +1,39 @@
 function [bagAccu,instAccu] = ConventMultiPlayerInst2SinglePlayerThreshold(trainingfilename,validatefilename,playerNum,k)
 
 %[bagInfo,instPred,instGt,sinst_prob] = ReadClassificationFile(trainingfilename);
-[bagInfo,instPred,instGt,sinst_prob] = ReadClassificationFile(validatefilename);
+[bagInfo,instPred,instGt,inst_prob] = ReadClassificationFile(validatefilename);
 
-
-C = nchoosek(1:playerNum,k);
-for i = 1:size(C,1)
-    A(i,:) = zeros(1,playerNum);
-    for j = 1:size(C,2)
-        A(i,C(i,j)) = 1;
+if ~isnan(k)
+    C = nchoosek(1:playerNum,k);
+    for i = 1:size(C,1)
+        A(i,:) = zeros(1,playerNum);
+        for j = 1:size(C,2)
+            A(i,C(i,j)) = 1;
+        end
+    end
+else
+    counter = 1;
+    for p = 2:playerNum
+        C = nchoosek(1:playerNum,p);
+        for i = 1:size(C,1)
+            A(counter,:) = zeros(1,playerNum);
+            for j = 1:size(C,2)
+                A(counter,C(i,j)) = 1;
+            end
+            counter = counter + 1;
+        end
     end
 end
+        
+% validate set (first-half in testing bags)
+vBagInfo = bagInfo(1:floor(length(bagInfo)/2));
+vinstPred = instPred(1:floor(length(bagInfo)/2));
+vinstGt   = instGt(1:floor(length(bagInfo)/2)); 
+vinst_prob= inst_prob(1:floor(length(bagInfo)/2),:);
 
-player_labelGT = ConvertGTInst(instGt,A);
+vplayer_labelGT = ConvertGTInst(vinstGt,A);
 
-sbag_prob = max(sinst_prob,[],2);
+vbag_prob = max(vinst_prob,[],2);
 
 % % content-aware
 % Threshold = unique(sbag_prob);
@@ -39,8 +58,8 @@ for Th = 1:length(Threshold)
 %             Y_label(b,:) = zeros(1,playerNum);
 %         end
 %     end
-    [Y_label,Y_prob] = ClassifyBagInstanceWithThreshold(sinst_prob,sbag_prob,A,playerNum,k,Threshold(Th));
-    [Accu(Th), Prec(Th), Reca(Th), F1(Th)] = CalculatePerformanceOfClassification(Y_label,player_labelGT);
+    [Y_label,Y_prob] = ClassifyBagInstanceWithThreshold(vinst_prob,vbag_prob,A,playerNum,k,Threshold(Th));
+    [Accu(Th), Prec(Th), Reca(Th), F1(Th)] = CalculatePerformanceOfClassification(Y_label,vplayer_labelGT);
 %     if   Th == 1 || F1(Th) >= F1_max
 %         y_Label = Y_label;
 %         y_Prob = Y_prob;
@@ -56,18 +75,25 @@ y_th = (Threshold(thRegion(1))+Threshold(thRegion(end)))/2;
 
 
 
-[tY_label,tY_prob] = ClassifyBagInstanceWithThreshold(sinst_prob,sbag_prob,A,playerNum,k,y_th);
+[vY_label,vY_prob] = ClassifyBagInstanceWithThreshold(vinst_prob,vbag_prob,A,playerNum,k,y_th);
 
 
-[vbagInfo,vinstPred,vinstGt,vsinst_prob] = ReadClassificationFile(validatefilename);
-vplayer_labelGT = ConvertGTInst(vinstGt,A);
-vsbag_prob = max(vsinst_prob,[],2);
-[vY_label,vY_prob] = ClassifyBagInstanceWithThreshold(vsinst_prob,vsbag_prob,A,playerNum,k,y_th);
+%[vbagInfo,vinstPred,vinstGt,vsinst_prob] = ReadClassificationFile(validatefilename);
+tBagInfo = bagInfo(floor(length(bagInfo)/2)+1:length(bagInfo));
+tinstPred = instPred(floor(length(bagInfo)/2)+1:length(bagInfo));
+tinstGt   = instGt(floor(length(bagInfo)/2)+1:length(bagInfo)); 
+tinst_prob= inst_prob(floor(length(bagInfo)/2)+1:length(bagInfo),:);
+
+
+tplayer_labelGT = ConvertGTInst(tinstGt,A);
+tbag_prob = max(tinst_prob,[],2);
+[tY_label,tY_prob] = ClassifyBagInstanceWithThreshold(tinst_prob,tbag_prob,A,playerNum,k,y_th);
 
 
 
 newFilePathv = strrep(validatefilename,'multiPlayers','multiPlayers/Convert(Th)');
 newFilePatht = strrep(trainingfilename,'multiPlayers','multiPlayers/Convert(Th)');
+newFilePatht = strrep(newFilePatht,'training','testing');
 
 filesepIdx = strfind(newFilePatht,'/');
 newFolder = newFilePatht(1:filesepIdx(end));
@@ -76,9 +102,9 @@ if ~exist(newFolder,'dir')
 end
 
 
-[bagAccu,instAccu] = SaveConventedInstance(newFilePathv,vY_prob,vY_label,vplayer_labelGT,vbagInfo,y_th);
+[bagAccu,instAccu] = SaveConventedInstance(newFilePathv,vY_prob,vY_label,vplayer_labelGT,vBagInfo,y_th);
 
-SaveConventedInstance(newFilePatht,tY_prob,tY_label,player_labelGT,bagInfo,y_th);
+SaveConventedInstance(newFilePatht,tY_prob,tY_label,tplayer_labelGT,tBagInfo,y_th);
 
 end
 
@@ -133,9 +159,13 @@ function [Y_label,Y_prob] = ClassifyBagInstanceWithThreshold(sinst_prob,sbag_pro
             [~,sortingIndices] = sort(mean(keyPlayer,1),'descend');
             Y_label(b,:) = zeros(1,playerNum);
             Y_prob(b,:) = zeros(1,playerNum);
-            Y_label(b,sortingIndices(1:k)) = 1;
-            Y_prob(b,sortingIndices(1:k)) = sbag_prob(b);            
-            
+            if isnan(k)
+                p = mode(sum(keyPlayer,2));
+            else
+                p = k;
+            end
+            Y_label(b,sortingIndices(1:p)) = 1;
+            Y_prob(b,sortingIndices(1:p)) = sbag_prob(b);           
         else
             Y_prob(b,1:playerNum) = sbag_prob(b);
             Y_label(b,:) = zeros(1,playerNum);
