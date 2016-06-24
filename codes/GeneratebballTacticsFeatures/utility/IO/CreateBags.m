@@ -5,19 +5,17 @@ function bags = CreateBags(dataPath,featureSelect,feature,tacticName,positiveBag
     ki = size(keyInstanceLabels,2);
     for j=1:pb+nb
         for p=1:ki
-            if j<=pb
-                %bags(j).name = [tacticName '-' int2str(j)];
-                bags(j).name = [tacticName '-' int2str(indexs(j))];
-                bags(j).inst_label(p) = keyInstanceLabels(j,p);
+            if ismember(j,positiveBagsIndex)
+                bags(j).name = [tacticName '-' int2str(j)];
+                bags(j).inst_label(p) = keyInstanceLabels(find(positiveBagsIndex==j),p);
             else
-                %bags(j).name = ['Non' tacticName '-' int2str(j-pb)];
-                bags(j).name = ['Non' tacticName '-' int2str(indexs(j))];
+                bags(j).name = ['Non' tacticName '-' int2str(j)];
                 bags(j).inst_label(p) = 0;
             end
 
             %bags(j).inst_name{p} = [int2str(j) '-p' int2str(p)];
             bags(j).inst_name{p} = ['p' int2str(p)];
-            bags(j).instance(p,:) = reshape(feature{indexs(j),p},1,size(feature{indexs(j),p},1)*size(feature{indexs(j),p},2));
+            bags(j).instance(p,:) = reshape(feature{j,p},1,size(feature{j,p},1)*size(feature{j,p},2));
             
         end
     end
