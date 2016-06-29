@@ -50,7 +50,8 @@ end
 
 for j = 1:length(pbagsIndex)
     bagIdx = floor((pbagsIndex(j)-1)/(num_data/num_folder))+1;
-    disp([int2str(pbagsIndex(j)) ',' int2str(bagIdx)]);
+    % display positive bags and their location
+    %disp([int2str(pbagsIndex(j)) ',' int2str(bagIdx)]);
     folds(bagIdx).numPbags = folds(bagIdx).numPbags + 1;
     folds(bagIdx).idxPbags = [folds(bagIdx).idxPbags pbagsIndex(j)];
 end
