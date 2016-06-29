@@ -6,9 +6,10 @@ function new_bags = MIL_CheckPositiveBagsInFolds(old_bags,num_folder,verbosity)
 [npbags_folds] = CalculatePositiveBagInEachFold(pbagsIndex,length(old_bags),num_folder);
 
 
-for i = 1:num_folder
-    idealFoldPbagsNum(i) = length(floor((i-1) * npbags / num_folder)+1 : floor( i * npbags/num_folder));
-end
+% for i = 1:num_folder
+%     idealFoldPbagsNum(i) = length(floor((i-1) * npbags / num_folder)+1 : floor( i * npbags/num_folder));
+% end
+idealFoldPbagsNum = SeparateSubFold(npbags,num_folder);
 
 if exist('verbosity','var') && verbosity
     disp(['Old Positve Bags ...' int2str(pbagsIndex)])
@@ -27,6 +28,15 @@ if exist('verbosity','var') && verbosity
         disp(['fold ' int2str(i) ': ' int2str(Rnpbags_folds(i).numPbags) '...']);
     end
 end
+end
+
+function fold_storage = SeparateSubFold(num_bags,num_fold)
+    rem = mod(num_bags,num_fold);
+    basic_storage = repmat((num_bags-rem)/num_fold,1,num_fold);
+    add_on = zeros(1,num_fold);        
+    % random assign remainder
+    add_on(randperm(num_fold,rem)) = 1;
+    fold_storage = basic_storage + add_on;
 end
 
 function [num_positiveBag,idx_positiveBag] = CalculatePositiveBagNum(bags)
