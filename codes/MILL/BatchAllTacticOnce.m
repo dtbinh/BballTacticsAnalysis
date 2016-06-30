@@ -32,8 +32,19 @@ elseif strcmp(EvaluationMethod,'cross_validate')
 end
 
 % start timer
+mkdir('tmp');
 tic
-for f=1:nbfiles  
+for f=1:nbfiles 
+    num_fold = 5;
+    if ~exist(['tmp/tactic_bagSep.mat'],'file')            
+        if f == 1
+            LoadTacticsParams;
+            [train_bagIdx,test_bagIdx] = MIL_BagSeparation(tactics,num_fold);
+            save(['tmp/tactic_bagSep.mat'],'train_bagIdx','test_bagIdx');
+        end
+    else
+        load(['tmp/tactic_bagSep.mat']);
+    end    
     tmpPath = strrep(pathName,'data','tmp'); 
     %Specify datafile input and outputFolder
     if iscell(datafile)
@@ -60,19 +71,12 @@ for f=1:nbfiles
     
     if strcmp(dataset,'Training')
         num_fold = 5;
-        mkdir(tmpPath);
         
-        if ~exist([tmpFilePrefix '_bagSep.mat'],'file')            
-            if f == 1
-                LoadTacticsParams;
-                [train_bagIdx,test_bagIdx] = MIL_BagSeparation(tactics,num_fold);
-                save([tmpFilePrefix '_bagSep.mat'],'train_bagIdx','test_bagIdx');
-            end
-        else
-            load([tmpFilePrefix '_bagSep.mat']);
-        end
-       
         for x = 1: num_fold 
+            mkdir([tmpPath 'train' int2str(x)]);
+            
+            tmpFilePrefix = [tmpPath 'train' int2str(x) '/' tacticName];       
+
             train_bags = bags(train_bagIdx{x});
             test_bags = bags(test_bagIdx{x});
             train_data_file = [tmpFilePrefix '_train' int2str(x) '.data'];
