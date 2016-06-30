@@ -48,10 +48,10 @@ for f=1:nbfiles
     tmpPath = strrep(pathName,'data','tmp'); 
     %Specify datafile input and outputFolder
     if iscell(datafile)
-        tmpFilePrefix = [tmpPath strtok(datafile{f},'.')];
+        tacticName = strtok(datafile{f},'.');        
         inputfile = [pathName datafile{f}];
     else
-        tmpFilePrefix = [tmpPath strtok(datafile,'.')];
+        tacticName = strtok(datafile,'.');
         inputfile = [pathName datafile];
     end
 
