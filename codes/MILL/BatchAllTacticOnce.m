@@ -70,7 +70,6 @@ for f=1:nbfiles
     param.kernel0 = KernelParamO;
     
     if strcmp(dataset,'Training')
-        num_fold = 5;
         
         for x = 1: num_fold 
             mkdir([tmpPath 'train' int2str(x)]);
