@@ -25,7 +25,7 @@ if isempty(train_bags)
         error('The model file must be provided in the train_only setting!');
     end;
     eval(['!copy ' preprocess.model_file ' ' temp_model_file ]);
-    [test_label_predict, test_prob_predict] = LibSVMMEX(para, [], [], test_instance, ones(num_test_inst, 1));    
+    [test_label_predict, test_prob_predict] = LibSVM(para, [], [], test_instance, ones(num_test_inst, 1));    
 else
     
     step = 1;
@@ -38,8 +38,9 @@ else
         %num_neg_label = sum(train_label == 0);
         %new_para = sprintf(' -NegativeWeight %.10g', (num_pos_label / num_neg_label));
         
-        [all_label_predict, all_prob_predict] = LibSVMMEX(para, train_instance, train_label, [train_instance; test_instance], ones(num_train_inst+num_test_inst, 1));
-
+        %[all_label_predict, all_prob_predict] = LibSVMMEX(para, train_instance, train_label, [train_instance; test_instance], ones(num_train_inst+num_test_inst, 1));
+        [all_label_predict, all_prob_predict] = LibSVM(para, train_instance, train_label, [train_instance; test_instance], ones(num_train_inst+num_test_inst, 1));
+        
         train_label_predict = all_label_predict(1 : num_train_inst);
         train_prob_predict = all_prob_predict(1 : num_train_inst);
         test_label_predict = all_label_predict(num_train_inst+1 : num_train_inst+ num_test_inst);
