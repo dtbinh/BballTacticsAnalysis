@@ -4,17 +4,20 @@ addpath(genpath([pwd '/codes/MILL']));
 % filenamePrefix = 'tuning/multiPlayers/syncLargeZoneDist/EVZoneDist3/cross_validate/SVM/inst_MI/RBF/K=0.1C=0.25N=1/';
 % fileLists = dir([filenamePrefix 'inst_MI_validate*']);
 
-targetDir = 'tuningUltimate/multiPlayers';
-dataDir = 'dataUltimate/multiPlayers';
+targetDir = 'tuning/multiPlayers';
+dataDir = 'data/multiPlayers';
 tacticSelect = {'F23','EV','HK','PD','PT','RB','SP','WS','WV','WW'};
 datasetSelect = 'syncLarge';
 SVMType = 'inst_MI'; %inst_MI
 EvaluationSelect = 'cross_validate';
-featureSelect = 'ZoneDist';
-%featureSelect = 'ZoneSoftAssignDist';
+%featureSelect = 'ZoneDist';
+featureSelect = 'ZoneSoftAssignDist';
 %featureSelect = 'ZoneVelocitySoftAssign';
-SVMKernelType = 'RBF';
 playerNum = {'3','3','3','3','4','3','2','3','5','2'};
+% featureSelect = 'ZoneVSoftAssignConcat';
+% playerNum = {'','','','','','','','','',''};
+SVMKernelType = 'RBF';
+
 
 param.kernel = 5:-1:-5;
 param.cost = 10:-1:-5;
