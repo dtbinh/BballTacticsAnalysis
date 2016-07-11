@@ -101,7 +101,6 @@ if ~exist(newFolder,'dir')
     mkdir(newFolder);
 end
 
-
 [bagAccu,instAccu] = SaveConventedInstance(newFilePathv,vY_prob,vY_label,vplayer_labelGT,vBagInfo,y_th);
 
 SaveConventedInstance(newFilePatht,tY_prob,tY_label,tplayer_labelGT,tBagInfo,y_th);
@@ -194,8 +193,7 @@ function [Accu, Prec, Reca, F1] = CalculatePerformanceOfClassification(Y_label,p
 end
 
 function [bagAccu,instAccu] = SaveConventedInstance(newFilePath,Y_prob,Y_label,playerGT_label,bagInfo,threshold)
-
-fid = fopen(newFilePath,'w');
+  fid = fopen(newFilePath,'w');
   fprintf(fid,'bagName  bagPred  bagTruth  bagProb  instPred  instTruth  instProb \n');
   
   %Positive = 0;
@@ -206,9 +204,9 @@ fid = fopen(newFilePath,'w');
   falseNegative= 0;    
 
   for j = 1:length(bagInfo)
-        str = [bagInfo{j} '  ' int2str(max(Y_prob(j,:))>threshold) '  ' int2str(sum(playerGT_label(j,:))>0) '    ' num2str(max(Y_prob(j,:)),'%.4f') ';  ' ...
-            num2str(Y_label(j,:),'%d') '  ' num2str(playerGT_label(j,:),'%d') '  ' num2str(Y_prob(j,:),'% .4f') '\n'];
-        fprintf(fid, str);
+    str = [bagInfo{j} '  ' int2str(max(Y_prob(j,:))>threshold) '  ' int2str(sum(playerGT_label(j,:))>0) '    ' num2str(max(Y_prob(j,:)),'%.4f') ';  ' ...
+        num2str(Y_label(j,:),'%d') '  ' num2str(playerGT_label(j,:),'%d') '  ' num2str(Y_prob(j,:),'% .4f') '\n'];
+    fprintf(fid, str);
 
     truePositive = truePositive + sum(and(playerGT_label(j,:), Y_label(j,:)));
     trueNegative = trueNegative + sum(and(not(playerGT_label(j,:)),not(Y_label(j,:))));
