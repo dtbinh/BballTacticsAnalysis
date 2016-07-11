@@ -1,5 +1,4 @@
-close all
-clear all
+function showSVMTune(param,EvaluationMethod,kernelType,SVMType,dataset) 
 addpath(genpath([pwd '/codes/MILL']));
 
 tactics = {'F23','EV','HK','PD','PT','RB','SP','WS','WV','WW'};
@@ -7,7 +6,8 @@ tactics = {'F23','EV','HK','PD','PT','RB','SP','WS','WV','WW'};
 % features = {'ZoneDist'};
 % features = {'ZoneSoftAssignDist'};
 % features = {'ZoneVelocitySoftAssign'};
-features = {'P','V'};
+features= {'ZoneVSoftAssignConcat'};
+% features = {'P','V'};
 % features = {'Zone'}
 evalOption = {'leave_one_out','cross_validate'};
 dataset = {'nonSyncLarge','syncLarge'};
@@ -18,24 +18,22 @@ targetDir = 'tuningUltimate';
 dataDir = 'dataUltimate';
 
 % % multiple players setting
-% group = 'multiPlayers';
-% Converted = 'Convert(Th)';
+group = 'multiPlayers';
+Converted = 'Convert(Th)';
 % playerNum = {'3','3','3','3','4','3','2','3','5','2'};
+playerNum = {'','','','','','','','','',''};
 
 % % single player setting
-group = 'singlePlayer';
-Converted ='';
-if strfind(features{1},'Zone')
-    playerNum = {'1','1','1','1','1','1','1','1','1','1'};
-else    
-    playerNum = {'','','','','','','','','',''};
-end
+% group = 'singlePlayer';
+% Converted ='';
+% if strfind(features{1},'Zone')
+%     playerNum = {'1','1','1','1','1','1','1','1','1','1'};
+% else    
+%     playerNum = {'','','','','','','','','',''};
+% end
 
 
 
-param.kernel = 5:-1:-5;   % default 3:-1:-15;
-param.cost = 10:-1:-5;  %default 15:-1:-5;
-param.negativeWeight = 0;
 
 
 query = [1:10];
@@ -62,7 +60,7 @@ for i=1:length(query)%:length(tactics)
                 
                 
                 TuneSVMParam(param,[targetDir '/' group '/' Converted],playerNum{i},tactics{t},evalOption{d},dataset{d},features{f},svm{s},SVMKernelType);
-                pause(5)
+                pause
             end
         end
     end

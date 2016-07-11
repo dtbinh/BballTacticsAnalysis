@@ -1,6 +1,10 @@
-function TuneSVMParam(param,targetDir,playerNum,tacticSelect,EvaluationSelect,datasetSelect,featureSelect,SVMType,SVMKernelType)
-
+%function TuneSVMParam(param,targetDir,playerNum,tacticSelect,EvaluationSelect,datasetSelect,featureSelect,SVMType,SVMKernelType)
+function svmsetting = TuneSVMParam(param,targetDir,EvaluationSelect,SVMType,SVMKernelType)
 weightNum = length(param.negativeWeight);
+
+if strfind(targetDir,'multiPlayers')
+    targetDir = strrep(targetDir,'multiPlayers','multiPlayers/Convert(Th)');
+end
 
 KernelParamO = param.kernel0;
 CostFactorO  = 1;
@@ -12,18 +16,19 @@ for i = param.kernel
             CostFactor  = 2^j*CostFactorO;
             NegativeWeight=2^k*NegativeWeightO;
             
-            if ~isempty(playerNum)
-                subfolder = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight)];
-            else
-                subfolder = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight)];
-            end
+%             if ~isempty(playerNum)
+%                 subfolder = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight)];
+%             else
+%                 subfolder = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight)];
+%             end
+            subfolder = [targetDir '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(KernelParam) 'C=' num2str(CostFactor) 'N=' num2str(NegativeWeight)];
 
             fid  = fopen([subfolder '/' SVMType '.data.result'],'r');
             % to lowercase
-            if fid == -1
-                subfolder = [targetDir '/' tacticSelect '/' datasetSelect '/' lower(tacticSelect) lower(featureSelect) '/' EvaluationSelect '/svm/k=' num2str(KernelParam) 'c=' num2str(CostFactor) 'n=' num2str(NegativeWeight)];
-                fid  = fopen([subfolder '/' lower(SVMType) '.data.result'],'r');
-            end
+%             if fid == -1
+%                 subfolder = [targetDir '/' tacticSelect '/' datasetSelect '/' lower(tacticSelect) lower(featureSelect) '/' EvaluationSelect '/svm/k=' num2str(KernelParam) 'c=' num2str(CostFactor) 'n=' num2str(NegativeWeight)];
+%                 fid  = fopen([subfolder '/' lower(SVMType) '.data.result'],'r');
+%             end
             % skip files if files are not existed
             if fid == -1
                 disp(['skip ' subfolder '!!']);
@@ -51,9 +56,12 @@ for i = param.kernel
             for v=1:length(dir([subfolder '/' SVMType '_validate*']))
                fid  = fopen([subfolder '/' SVMType '_validate' int2str(v) '.txt'],'r');
                while ~feof(fid)
-                   tline = fgetl(fid);
+                   prev_tline = tline;
+                   tline = fgetl(fid);                   
                end
                fclose(fid);
+               [token,remain] = strtok(prev_tline,'=');
+               threshold(v) = str2double(remain(2:end));
                C(v,:) = textscan(tline,'%f %f %f %f %f %f %f %f');              
             end
             C=cell2mat(C);
@@ -70,6 +78,7 @@ for i = param.kernel
             instLabel.Reca(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(7);
             instLabel.F1(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1)   = result(8);
             %pause
+            instLabel.Th(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1)   = mean(threshold);
         end
     end
 end
@@ -163,47 +172,56 @@ for n=1:weightNum
     tempKernel(n) = KernelParamO*2^param.kernel(row(1));
     tempCost(n) = CostFactorO*2^param.cost(col(1));
     tempNegativeWeight(n) = NegativeWeight;
+    tempTh(n) = instLabel.Th(row(1),col(1),n);
 end
 
 disp(' ');
 disp(' ');
-disp(['tempF1:' num2str(tempF1)]);
+disp(['tempF1:' num2str(tempF1) ', tempTh:' num2str(tempTh)]);
 
 optimalWeightIdx = find(tempF1 == max(tempF1));
 optimalKernel = tempKernel(optimalWeightIdx(1));
 optimalCost   = tempCost(optimalWeightIdx(1));
 optimalNegativeWeight = tempNegativeWeight(optimalWeightIdx(1));
 optimalF1 = tempF1(optimalWeightIdx(1));
+optimalTh = tempTh(optimalWeightIdx(1));
 
 disp(' ');
-disp(['optKernelParm=' num2str(optimalKernel) ', optCostFactor=' num2str(optimalCost) ', optNegativeWeight=' num2str(optimalNegativeWeight) ': F1=' num2str(optimalF1)]);
-disp(['KernelParmN1=' num2str(tempKernel(1)) ', CostFactorN1=' num2str(tempCost(1)) ', NegativeWeightN1=' num2str(tempNegativeWeight(1)) ': F1N1=' num2str(tempF1(1))]);
+disp(['optKernelParm=' num2str(optimalKernel) ', optCostFactor=' num2str(optimalCost) ', optNegativeWeight=' num2str(optimalNegativeWeight) ': F1=' num2str(optimalF1) ', optTh:' num2str(optimalTh)]);
+disp(['KernelParmN1=' num2str(tempKernel(1)) ', CostFactorN1=' num2str(tempCost(1)) ', NegativeWeightN1=' num2str(tempNegativeWeight(1)) ': F1N1=' num2str(tempF1(1)) ', tempTh:' num2str(tempTh)]);
 
-if ~isempty(playerNum)
-    optimalFiles = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(optimalKernel) 'C=' num2str(optimalCost) 'N=' num2str(optimalNegativeWeight) '/' SVMType];
-    outputFolder = strrep(optimalFiles,'tuning','result');
-    filesepIdx = strfind(outputFolder,'/');
-    outputFolder = outputFolder(1:filesepIdx(end));
-else
-    optimalFiles = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(optimalKernel) 'C=' num2str(optimalCost) 'N=' num2str(optimalNegativeWeight) '/' SVMType];
-    outputFolder = strrep(optimalFiles,'tuning','result');
-    filesepIdx = strfind(outputFolder,'/');
-    outputFolder = outputFolder(1:filesepIdx(end));
-end
+svmsetting.kernel = optimalKernel;
+svmsetting.cost = optimalCost;
+svmsetting.negativeweight = optimalNegativeWeight;
+svmsetting.Th = optimalTh;
 
+% if ~isempty(playerNum)
+%     optimalFiles = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(optimalKernel) 'C=' num2str(optimalCost) 'N=' num2str(optimalNegativeWeight) '/' SVMType];
+%     outputFolder = strrep(optimalFiles,'tuning','result');
+%     filesepIdx = strfind(outputFolder,'/');
+%     outputFolder = outputFolder(1:filesepIdx(end));
+% else
+%     optimalFiles = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(optimalKernel) 'C=' num2str(optimalCost) 'N=' num2str(optimalNegativeWeight) '/' SVMType];
+%     outputFolder = strrep(optimalFiles,'tuning','result');
+%     filesepIdx = strfind(outputFolder,'/');
+%     outputFolder = outputFolder(1:filesepIdx(end));
+% end
+% 
+% 
+% if ~exist(outputFolder,'dir')
+%     mkdir(outputFolder)
+% end
+% copyfile([optimalFiles '*'],outputFolder);
+% originalFiles = strrep(optimalFiles,'Convert(Th)/','');
+% originalFilesOutFolder = strrep(originalFiles,'tuning','result');
+% filesepIdx = strfind(originalFilesOutFolder,'/');
+% originalFilesOutFolder = originalFilesOutFolder(1:filesepIdx(end));
+% if ~exist(originalFilesOutFolder,'dir')
+%     mkdir(originalFilesOutFolder)
+% end
+% copyfile([originalFiles '*'],originalFilesOutFolder);
 
-if ~exist(outputFolder,'dir')
-    mkdir(outputFolder)
-end
-copyfile([optimalFiles '*'],outputFolder);
-originalFiles = strrep(optimalFiles,'Convert(Th)/','');
-originalFilesOutFolder = strrep(originalFiles,'tuning','result');
-filesepIdx = strfind(originalFilesOutFolder,'/');
-originalFilesOutFolder = originalFilesOutFolder(1:filesepIdx(end));
-if ~exist(originalFilesOutFolder,'dir')
-    mkdir(originalFilesOutFolder)
-end
-copyfile([originalFiles '*'],originalFilesOutFolder);
+outputFolder = [targetDir '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType];
 
 % set(gcf,'units','normalized','position',[0 0 1 1]);
 set(gcf,'outerposition',get(0,'screensize'));
