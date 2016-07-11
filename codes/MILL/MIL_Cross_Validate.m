@@ -38,11 +38,11 @@ for i = 1:num_folder
   trainindex = setdiff(1:num_data, testindex);
   
   % separate new validate index from trainindex
-  if ~isempty(strfind(data_file,'multiPlayers'))
-    validateindex = trainindex(1 : floor(num_data/num_folder));
-    trainindex = setdiff(trainindex, validateindex);
-    testindex = [validateindex testindex]; % combine validate and test together, then separate them when run end
-  end
+%   if ~isempty(strfind(data_file,'multiPlayers'))
+%     validateindex = trainindex(1 : floor(num_data/num_folder));
+%     trainindex = setdiff(trainindex, validateindex);
+%     testindex = [validateindex testindex]; % combine validate and test together, then separate them when run end
+%   end
   % Classificaiton
   run_class(i) = feval(classifier_wrapper_handle, bags, trainindex, testindex, classifier); 
   %copyfile('temp/temp.output.txt',[preprocess.WorkingDir '/' strtok(preprocess.input_file,'.') '/cross_validate/' classifier '_iter' int2str(i) '_' classifier '.txt']);
@@ -57,7 +57,7 @@ for i = 1:num_folder
   
   %record model txt file
   %copyfile([preprocess.WorkingDir '/temp/temp.model.txt'],[preprocess.output_file(1:k-1) '_model' int2str(i) '.txt']);
-  save([preprocess.output_file(1:k-1) '_model' int2str(i) '.mat'],'model','-mat');
+  %save([preprocess.output_file(1:k-1) '_model' int2str(i) '.mat'],'model','-mat');
   
   % save testbags svm final result
   testbags = bags(testindex);
