@@ -17,6 +17,11 @@ testindex = 1:num_data;
 % Classify with Ensemble 
 [test_bag_label, test_inst_label, test_bag_prob, test_inst_prob] = MIL_Classify(classifier, [], bags);      
 %run.Y_compute = Y_compute; run.Y_prob = Y_prob; run.Y_test = Y_test;
+
+k = strfind(preprocess.output_file,'.data.result');
+filename = [preprocess.output_file(1:k-1) '_validate.txt'];  
+MIL_Instance_F1Evaluate(bags,filename,test_inst_label,test_inst_prob);
+
 run.bag_label = test_bag_label;
 run.inst_label = test_inst_label; 
 run.bag_prob = test_bag_prob;
