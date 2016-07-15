@@ -33,9 +33,9 @@ end
 
 % start timer
 mkdir('tmp');
-num_fold = 5;
+param.num_fold = 5;
 %% check bag separation existence
-[train_bagIdx,test_bagIdx] = checkBagSep(num_fold);
+[train_bagIdx,test_bagIdx] = checkBagSep(param.num_fold);
 
 tic
 
