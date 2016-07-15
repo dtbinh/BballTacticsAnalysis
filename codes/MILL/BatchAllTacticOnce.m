@@ -33,20 +33,15 @@ end
 
 % start timer
 mkdir('tmp');
-tic
 num_fold = 5;
+%% check bag separation existence
+[train_bagIdx,test_bagIdx] = checkBagSep(num_fold);
+
+tic
+
 for x = 1:num_fold
     for f=1:nbfiles     
-        %% check bag separation 
-        if ~exist(['tmp/tactic_bagSep.mat'],'file')            
-            if f == 1
-                LoadTacticsParams;
-                [train_bagIdx,test_bagIdx] = MIL_BagSeparation(tactics,num_fold);
-                save(['tmp/tactic_bagSep.mat'],'train_bagIdx','test_bagIdx');
-            end
-        else
-            load(['tmp/tactic_bagSep.mat']);
-        end    
+
         tmpPath = strrep(pathName,'data','tmp'); 
         %% Specify datafile input and tactic name
         if iscell(datafile)
