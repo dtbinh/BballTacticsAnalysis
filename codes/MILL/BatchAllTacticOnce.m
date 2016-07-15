@@ -37,6 +37,8 @@ param.num_fold = 5;
 %% check bag separation existence
 [train_bagIdx,test_bagIdx] = checkBagSep(param.num_fold);
 
+SaveTrainAndTestData(param.num_fold,pathName,datafile,train_bagIdx,test_bagIdx);
+
 tic
 
 for x = 1:num_fold
