@@ -24,7 +24,7 @@ function runConvert(param,targetDir,EvaluationSelect,SVMType,SVMKernelType)
 % param.negativeWeight = 0;
 % param.iter = 1;
 
-KernelParamO = param.kernel0;
+KernelParamO = param.KernelO;
 CostFactorO  = 1;
 NegativeWeight0 = 1;
 
@@ -59,12 +59,13 @@ NegativeWeight0 = 1;
                 clear tmpString
 
                 if ~isempty(validatefileLists)
-                    for f = 1:length(validatefileLists)
-                        %ConventMultiPlayerInst2SinglePlayer([filenamePrefix fileLists(f).name],5,3);
-                        %[bagAccu(f),instAccu(f)] = ConventMultiPlayerInst2SinglePlayer([subfolder '/' fileLists(f).name],5,str2double(playerNum));
-                        [bagAccu(f),instAccu(f)] = ConventMultiPlayerInst2SinglePlayerThreshold([subfolder '/' trainingfileLists(f).name],...
-                            [subfolder '/' validatefileLists(f).name],5,str2double(playerNum));
-                    end
+                    [bagAccu,instAccu] = ConventInst2PlayerThresholdOfAllFold(subfolder,trainingfileLists,validatefileLists,5,str2double(playerNum));
+%                     for f = 1:length(validatefileLists)
+%                         %ConventMultiPlayerInst2SinglePlayer([filenamePrefix fileLists(f).name],5,3);
+%                         %[bagAccu(f),instAccu(f)] = ConventMultiPlayerInst2SinglePlayer([subfolder '/' fileLists(f).name],5,str2double(playerNum));
+%                         [bagAccu(f),instAccu(f)] = ConventMultiPlayerInst2SinglePlayerThreshold([subfolder '/' trainingfileLists(f).name],...
+%                             [subfolder '/' validatefileLists(f).name],5,str2double(playerNum));
+%                     end
 
                     clear fileLists
 
