@@ -6,7 +6,7 @@ if strfind(targetDir,'multiPlayers')
     targetDir = strrep(targetDir,'multiPlayers','multiPlayers/Convert(Th)');
 end
 
-KernelParamO = param.kernel0;
+KernelParamO = param.KernelO;
 CostFactorO  = 1;
 NegativeWeightO = 1;
 for i = param.kernel
@@ -53,32 +53,55 @@ for i = param.kernel
             [~, sinst]= strtok(remain,'=');
             bag(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = str2num(sbag(2:end));
             inst(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1)= str2num(sinst(2:end));
-            for v=1:length(dir([subfolder '/' SVMType '_validate*']))
-               fid  = fopen([subfolder '/' SVMType '_validate' int2str(v) '.txt'],'r');
-               while ~feof(fid)
-                   prev_tline = tline;
-                   tline = fgetl(fid);                   
-               end
-               fclose(fid);
-               [token,remain] = strtok(prev_tline,'=');
-               threshold(v) = str2double(remain(2:end));
-               C(v,:) = textscan(tline,'%f %f %f %f %f %f %f %f');              
+            
+            fid  = fopen([subfolder '/' SVMType '_validateAll.txt'],'r');
+            while ~feof(fid)
+                prev_tline = tline;
+                tline = fgetl(fid);                   
             end
+            fclose(fid);
+            [token,remain] = strtok(prev_tline,'=');
+            threshold = str2double(remain(2:end));
+            C = textscan(tline,'%f %f %f %f %f %f %f %f');
             C=cell2mat(C);
-            % remove nan as 0
             C(isnan(C)) = 0;
-            result = mean(C,1);
-            clear C
-            instLabel.tp(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(1);
-            instLabel.tn(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(2);
-            instLabel.fp(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(3);
-            instLabel.fn(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(4);
-            instLabel.Accu(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(5);
-            instLabel.Prec(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(6);
-            instLabel.Reca(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(7);
-            instLabel.F1(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1)   = result(8);
-            %pause
-            instLabel.Th(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1)   = mean(threshold);
+            instLabel.tp(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = C(1);
+            instLabel.tn(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = C(2);
+            instLabel.fp(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = C(3);
+            instLabel.fn(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = C(4);
+            instLabel.Accu(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = C(5);
+            instLabel.Prec(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = C(6);
+            instLabel.Reca(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = C(7);
+            instLabel.F1(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1)   = C(8);            
+            instLabel.Th(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1)   = threshold;
+            
+
+%             for v=1:length(dir([subfolder '/' SVMType '_validate*']))
+%                fid  = fopen([subfolder '/' SVMType '_validate' int2str(v) '.txt'],'r');
+%                while ~feof(fid)
+%                    prev_tline = tline;
+%                    tline = fgetl(fid);                   
+%                end
+%                fclose(fid);
+%                [token,remain] = strtok(prev_tline,'=');
+%                threshold(v) = str2double(remain(2:end));
+%                C(v,:) = textscan(tline,'%f %f %f %f %f %f %f %f');              
+%             end
+%             C=cell2mat(C);
+%             % remove nan as 0
+%             C(isnan(C)) = 0;
+%             result = mean(C,1);
+%             clear C
+%             instLabel.tp(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(1);
+%             instLabel.tn(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(2);
+%             instLabel.fp(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(3);
+%             instLabel.fn(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(4);
+%             instLabel.Accu(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(5);
+%             instLabel.Prec(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(6);
+%             instLabel.Reca(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1) = result(7);
+%             instLabel.F1(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1)   = result(8);
+%             %pause
+%             instLabel.Th(-i+param.kernel(1)+1,-j+param.cost(1)+1,k+1)   = mean(threshold);
         end
     end
 end
@@ -194,6 +217,8 @@ svmsetting.kernel = optimalKernel;
 svmsetting.cost = optimalCost;
 svmsetting.negativeweight = optimalNegativeWeight;
 svmsetting.Th = optimalTh;
+svmsetting.F1 = optimalF1;
+
 
 % if ~isempty(playerNum)
 %     optimalFiles = [targetDir '/' datasetSelect featureSelect '/' tacticSelect featureSelect playerNum '/' EvaluationSelect '/SVM/' SVMType '/' SVMKernelType '/K=' num2str(optimalKernel) 'C=' num2str(optimalCost) 'N=' num2str(optimalNegativeWeight) '/' SVMType];
