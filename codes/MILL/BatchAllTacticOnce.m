@@ -45,6 +45,8 @@ SaveTrainAndTestData(param.num_fold,pathName,datafile,train_bagIdx,test_bagIdx);
 
 MIL_RunParam(param,pathName,datafile,EvaluationMethod,SVMType,kernelType);
 
+svmsettings = ExtractOptimalSVMSetting(param,pathName,datafile,EvaluationMethod,SVMType,kernelType);
+
 tic
 
 for x = 1:param.num_fold
