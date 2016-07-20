@@ -23,6 +23,8 @@ while ~exist('normalization','var') || (~strcmp(normalization,'1') && ~strcmp(no
     normalization = input('Q: Need Normalization?(Dist:No [type 0], Other:Yes [type 1])','s');
 end
 
+param.normalization = normalization;
+
 outputPath = strrep(pathName,'data','tuning'); 
 
 if strcmp(EvaluationMethod,'leave_one_out')
@@ -30,6 +32,8 @@ if strcmp(EvaluationMethod,'leave_one_out')
 elseif strcmp(EvaluationMethod,'cross_validate')
     EvalCmd = '-sf 1 -- cross_validate -t 5';  % -shuffle in cross-validation
 end
+
+param.EvalCmd = EvalCmd;
 
 % start timer
 mkdir('tmp');
@@ -41,7 +45,7 @@ SaveTrainAndTestData(param.num_fold,pathName,datafile,train_bagIdx,test_bagIdx);
 
 tic
 
-for x = 1:num_fold
+for x = 1:param.num_fold
     for f=1:nbfiles     
 
         tmpPath = strrep(pathName,'data','tmp'); 
