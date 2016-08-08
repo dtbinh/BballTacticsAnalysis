@@ -30,10 +30,9 @@ else
     
     step = 1;
     past_train_label(step,:) = train_label;
-    
-    counter = 0;
+ 
     while 1
-        counter = counter + 1
+        step
         %num_pos_label = sum(train_label == 1);
         %num_neg_label = sum(train_label == 0);
         %new_para = sprintf(' -NegativeWeight %.10g', (num_pos_label / num_neg_label));
@@ -67,7 +66,7 @@ else
         difference = sum(past_train_label(step,:) ~= train_label);
         fprintf('Number of label changes is %d\n', difference);
         if difference == 0, break; end;
-         
+        
         repeat_label = 0;
         for i = 1 : step
             if all(train_label == past_train_label(i, :))
