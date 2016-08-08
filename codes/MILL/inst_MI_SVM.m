@@ -27,6 +27,12 @@ if isempty(train_bags)
     eval(['!copy ' preprocess.model_file ' ' temp_model_file ]);
     [test_label_predict, test_prob_predict] = LibSVM(para, [], [], test_instance, ones(num_test_inst, 1));    
 else
+    if isequal(train_instance,test_instance) % MIL_Train_Validate
+        SVMHandle = @LibSVM; 
+        %pause
+    else %% MIL_Cross_Validate
+        SVMHandle = @LibSVMMEX;
+    end
     
     step = 1;
     past_train_label(step,:) = train_label;
@@ -38,7 +44,9 @@ else
         %new_para = sprintf(' -NegativeWeight %.10g', (num_pos_label / num_neg_label));
         
         %[all_label_predict, all_prob_predict] = LibSVMMEX(para, train_instance, train_label, [train_instance; test_instance], ones(num_train_inst+num_test_inst, 1));
-        [all_label_predict, all_prob_predict] = LibSVM(para, train_instance, train_label, [train_instance; test_instance], ones(num_train_inst+num_test_inst, 1));
+        %[all_label_predict, all_prob_predict] = LibSVM(para, train_instance, train_label, [train_instance; test_instance], ones(num_train_inst+num_test_inst, 1));
+        
+        [all_label_predict, all_prob_predict] = feval(SVMHandle, para, train_instance, train_label, [train_instance; test_instance], ones(num_train_inst+num_test_inst, 1));
         
         train_label_predict = all_label_predict(1 : num_train_inst);
         train_prob_predict = all_prob_predict(1 : num_train_inst);
