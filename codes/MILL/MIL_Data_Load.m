@@ -42,8 +42,8 @@ ninst = 0;
 idx = 0;
 while feof(fid) == 0
 
-    line = strtrim(fgets(fid));
-    elems = strsplit(' ',line);    %instance_name, bag_name, label
+    line = MIL_strtrim(fgets(fid));
+    elems = MIL_strsplit(' ',line);    %instance_name, bag_name, label
 
     bag_name = cell2mat(elems(2));
     if strcmp(bag_name, prev_bag_name) == 0     %change of bag

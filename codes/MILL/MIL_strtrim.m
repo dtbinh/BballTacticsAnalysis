@@ -1,4 +1,4 @@
-function s = strtrim(str)
+function s = MIL_strtrim(str)
 
 %trim the linebreak and space on both sides of the string
 
